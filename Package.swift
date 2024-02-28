@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "yavb",
     platforms: [
-       .macOS(.v13)
+        .macOS(.v13)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
@@ -15,6 +15,11 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.7.2"),
         // 🍃 An expressive, performant, and extensible templating language built for Swift.
         .package(url: "https://github.com/vapor/leaf.git", from: "4.2.4"),
+        
+        .package(url: "https://github.com/vapor/redis.git", from: "4.0.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.2.1"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
+        .package(url: "https://github.com/swift-server/swift-openapi-vapor", from: "1.0.0"),
     ],
     targets: [
         .executableTarget(
@@ -24,12 +29,18 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Leaf", package: "leaf"),
                 .product(name: "Vapor", package: "vapor"),
+                .product(name: "Redis", package: "redis"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
+            ],
+            plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]
         ),
         .testTarget(name: "AppTests", dependencies: [
             .target(name: "App"),
             .product(name: "XCTVapor", package: "vapor"),
-
+            
             // Workaround for https://github.com/apple/swift-package-manager/issues/6940
             .product(name: "Vapor", package: "vapor"),
             .product(name: "Fluent", package: "Fluent"),
