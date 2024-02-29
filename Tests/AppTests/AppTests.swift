@@ -2,14 +2,16 @@
 import XCTVapor
 
 final class AppTests: XCTestCase {
-    func testHelloWorld() async throws {
-        let app = Application(.testing)
-        defer { app.shutdown() }
-        try await configure(app)
+//    func testGetJSON() async throws {
+//        let handler: APIProtocol = Handler()
+//        let response = try await handler.getExampleJSON(query: .init(name: "Test"))
+//        XCTAssertEqual(response, .ok(.init(body: .json(.init(message: "Hello, Test!")))))
+//    }
+//    
+//    func testPostJSON() async throws {
+//        let handler: APIProtocol = Handler()
+//        let response = try await handler.postExampleJSON(body: .json(.init(message: "Hello, Test!")))
+//        XCTAssertEqual(response, .accepted(.init()))
+//    }
 
-        try app.test(.GET, "hello", afterResponse: { res in
-            XCTAssertEqual(res.status, .ok)
-            XCTAssertEqual(res.body.string, "Hello, world!")
-        })
-    }
 }

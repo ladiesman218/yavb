@@ -11,5 +11,5 @@ func routes(_ app: Application) throws {
     let apiHandler = AuthAPI()
     
     // Call the generated function on your implementation to add its request handlers to the app.
-    try apiHandler.registerHandlers(on: transport, serverURL: Servers.server1())
+    try apiHandler.registerHandlers(on: transport, serverURL: Servers.server1())    // server1() is generated from openapi.yaml, first item of the `servers` array
 }
