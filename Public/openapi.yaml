@@ -1,0 +1,53 @@
+openapi: 3.0.2
+info:
+  title: Yet Another Vapor Blog
+  description: API backbone for yavb
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/api
+    description: Vapor blog API
+  - url: http://localhost:8082/openapi
+    description: OpenAPI Description
+    
+paths:
+  /auth/register:
+    post:
+      description: Register an account
+      operationId: register
+      requestBody:
+        required: true
+        description: The needed info for set up the account.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        '201':
+         description: A success response with nothing.
+         content:
+          application/json:
+            schema:
+              type: string
+
+components:
+    schemas:
+        RegisterInput:
+            type: object
+            properties:
+              email:
+                  type: string
+              username:
+                  description: Must be at least 4 characters
+                  type: string
+              password1:
+                  description: Must be at least 4 characters
+                  type: string
+              password2:
+                  description: Must be at least 4 characters, and exact the same value as password1
+                  type: string
+            required:
+              - email
+              - username
+              - password1
+              - password2
+
