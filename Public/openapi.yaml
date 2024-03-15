@@ -6,12 +6,50 @@ info:
 servers:
   - url: http://localhost:8082/api
     description: Vapor blog API
-  - url: http://localhost:8082/openapi
-    description: OpenAPI Description
-    
+  - url: https://warthog-fitting-purely.ngrok-free.app/api
+    description: Ngrok endpoint
+    # Add a relative server URL to the OpenAPI document. This allows you to use the rendered documentation to make requests to the instance serving the OpenAPI document itself.
+#  - url: /api
+#    description: OpenAPI Description
+tags:
+  - name: Auth
+    description: Authentication and Authorization
+  - name: Post
+    description: Posts management, creation, deletion and modification
+  
 paths:
+  /post/create:
+    post:
+      tags:
+        - Post
+      description: Create a new post
+      operationId: createPost
+      requestBody:
+        required: true
+        description: Needed info for create the new post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        '201':
+          description: A success response with no content
+        '400':
+          description: Failed response with a string value for the reason. This is due to given post data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostEditError"
+        '409':
+          description: Failed response with a string value for the reason. This is due to given post data have been taken.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerConflictError"
   /auth/register:
     post:
+      tags:
+        - Auth
       description: Register an account
       operationId: register
       requestBody:
@@ -23,31 +61,77 @@ paths:
               $ref: "#/components/schemas/RegisterInput"
       responses:
         '201':
-         description: A success response with nothing.
-         content:
-          application/json:
-            schema:
-              type: string
+          description: A success response with no content.
+        '400':
+          description: Failed response with a string value for the reason. This is due to given registration data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationError"
+        '409':
+          description: Failed response with a string value for the reason. This is due to given registration data have been taken.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerConflictError"
 
 components:
     schemas:
+        Post:
+            type: object
+            properties:
+              title:
+                description: Title for the post
+                type: string
+                example: Hello World, This Is My First Post
+              body:
+                description: Body of the post
+                type: string
+                example: This could go very very very long...
+              summary:
+                description: Summary of the post
+                type: string
+                example: This is the excerpt of the post
+              isDraft:
+                description: A boolean value indicates whether the post is a draft, if yes, it won't be returned from public endpoint. Default to 'false'
+                type: boolean
+                example: false
+        PostEditError:
+          type: string
+          enum:
+            - Title Can not be empty
+        ServerConflictError:
+          type: string
+          enum:
+            - Username has been taken
+            - Email has been taken
+        RegistrationError:
+            type: string
         RegisterInput:
             type: object
             properties:
               email:
+                  description: An valid email address the account will be asscociated to.
                   type: string
+                  example: abc@xxx.com
               username:
-                  description: Must be at least 4 characters
+                  description: Case sensitive, must be >= 4 characters
                   type: string
+                  minLength: 4
+                  example: sunny
               password1:
-                  description: Must be at least 4 characters
+                  description: Case sensitive, must be >= 4 characters
                   type: string
+                  example: three_strAws!
               password2:
                   description: Must be at least 4 characters, and exact the same value as password1
                   type: string
+                  example: three_strAws!
             required:
               - email
               - username
               - password1
               - password2
+            enum:
+              - $request.body#/password1
 

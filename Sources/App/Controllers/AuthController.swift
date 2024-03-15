@@ -1,30 +1,49 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Lei Gao on 2024/2/28.
 //
 
 import Vapor
+import Fluent
 import OpenAPIRuntime
 
-struct AuthAPI: APIProtocol {
+
+struct API: APIProtocol {
     func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
+        
+        do {
+            try Components.Schemas.RegisterInput.validate(content: request)
+        } catch {
+            let ve = error as! ValidationsError
+            return .badRequest(.init(body: .json(ve.description)))
+        }
+        
         let registerInput: Components.Schemas.RegisterInput
         switch input.body {
             case .json(let json):
                 registerInput = json
         }
         
-        print(registerInput.email)
-        return .created(.init(body: .json("ok")))
+        guard registerInput.password1 == registerInput.password2 else {
+            return .badRequest(.init(body: .json("Passwords must match")))
+        }
+        
+        guard try await User.query(on: db).filter(\.$email == registerInput.email).first() == nil else {
+            return .conflict(.init(body: .json(.Email_space_has_space_been_space_taken)))
+        }
+        
+        guard try await User.query(on: db).filter(\.$username == registerInput.username).first() == nil else {
+            return .conflict(.init(body: .json(.Username_space_has_space_been_space_taken)))
+        }
+        
+        let hashedPassword = try Bcrypt.hash(registerInput.password1)
+        let user = User(username: registerInput.username, email: registerInput.email, password: hashedPassword)
+        try await user.create(on: db)
+        return .created(.init())
     }
     
-//    func getGreeting(_ input: Operations.getGreeting.Input) async throws -> Operations.getGreeting.Output {
-//        let name = input.query.name ?? "Stranger"
-////        return .ok(Operations.getGreeting.Output.Ok(body: .plainText(HTTPBody(stringLiteral: name))))
-//        return .ok(.init(body: .json("hi \(name)")))
-//    }
 }
 
 
@@ -40,7 +59,7 @@ struct AuthAPI: APIProtocol {
 //        print("Greeting a person with the name: \(name)")
 //        return .ok(.init(body: .json(.init(message: "Hello, \(name)!"))))
 //    }
-//    
+//
 //    func postExampleJSON(_ input: Operations.postExampleJSON.Input) async throws -> Operations.postExampleJSON.Output {
 //        let requestBody: Components.Schemas.Greeting
 //        switch input.body {
@@ -49,7 +68,7 @@ struct AuthAPI: APIProtocol {
 //        print("Received a greeting with the message: '\(requestBody.message)'")
 //        return .accepted(.init())
 //    }
-//    
+//
 //    func getExamplePlainText(_ input: Operations.getExamplePlainText.Input) async throws
 //    -> Operations.getExamplePlainText.Output
 //    {
@@ -66,7 +85,7 @@ struct AuthAPI: APIProtocol {
 //            )
 //        )
 //    }
-//    
+//
 //    func postExamplePlainText(_ input: Operations.postExamplePlainText.Input) async throws
 //    -> Operations.postExamplePlainText.Output
 //    {
@@ -78,7 +97,7 @@ struct AuthAPI: APIProtocol {
 //        print("Received text: \(bufferedText)")
 //        return .accepted(.init())
 //    }
-//    
+//
 //    func getExampleMultipleContentTypes(_ input: Operations.getExampleMultipleContentTypes.Input) async throws
 //    -> Operations.getExampleMultipleContentTypes.Output
 //    {
@@ -97,7 +116,7 @@ struct AuthAPI: APIProtocol {
 //        }
 //        return .ok(.init(body: responseBody))
 //    }
-//    
+//
 //    func postExampleMultipleContentTypes(_ input: Operations.postExampleMultipleContentTypes.Input) async throws
 //    -> Operations.postExampleMultipleContentTypes.Output
 //    {
@@ -109,7 +128,7 @@ struct AuthAPI: APIProtocol {
 //        }
 //        return .accepted(.init())
 //    }
-//    
+//
 //    func postExampleURLEncoded(_ input: Operations.postExampleURLEncoded.Input) async throws
 //    -> Operations.postExampleURLEncoded.Output
 //    {
@@ -120,11 +139,11 @@ struct AuthAPI: APIProtocol {
 //        print("Received a greeting with the message: '\(requestBody.message)'")
 //        return .accepted(.init())
 //    }
-//    
+//
 //    func getExampleRawBytes(_ input: Operations.getExampleRawBytes.Input) async throws
 //    -> Operations.getExampleRawBytes.Output
 //    { .ok(.init(body: .binary([0x73, 0x6e, 0x6f, 0x77, 0x0a]))) }
-//    
+//
 //    func postExampleRawBytes(_ input: Operations.postExampleRawBytes.Input) async throws
 //    -> Operations.postExampleRawBytes.Output
 //    {
@@ -136,7 +155,7 @@ struct AuthAPI: APIProtocol {
 //        for try await chunk in binary { print("Received chunk: \(chunk)") }
 //        return .accepted(.init())
 //    }
-//    
+//
 //    func getExampleMultipart(_ input: Operations.getExampleMultipart.Input) async throws
 //    -> Operations.getExampleMultipart.Output
 //    {
@@ -147,7 +166,7 @@ struct AuthAPI: APIProtocol {
 //        ]
 //        return .ok(.init(body: .multipartForm(multipartBody)))
 //    }
-//    
+//
 //    func postExampleMultipart(_ input: Operations.postExampleMultipart.Input) async throws
 //    -> Operations.postExampleMultipart.Output
 //    {

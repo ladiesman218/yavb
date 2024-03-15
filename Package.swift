@@ -20,6 +20,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.2.1"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
         .package(url: "https://github.com/swift-server/swift-openapi-vapor", from: "1.0.0"),
+        .package(url: "https://github.com/sushichop/Puppy.git", from: "0.7.0"),
     ],
     targets: [
         .executableTarget(
@@ -32,6 +33,7 @@ let package = Package(
                 .product(name: "Redis", package: "redis"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
+                .product(name: "Puppy", package: "Puppy")
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
