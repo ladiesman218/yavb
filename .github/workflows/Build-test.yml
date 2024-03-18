@@ -13,8 +13,12 @@ jobs:
   build-test:
     runs-on: ${{ matrix.os }}
     strategy:
-        matrix:
-          os: [ubuntu-latest, macOS-latest]
+      fail-fast: false  
+      # Set to false means even if actions on one os fails, other OS's will continue to be executed.
+      # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
+      # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
           
     steps:
     - name: Checkout code
