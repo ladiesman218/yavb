@@ -1,5 +1,3 @@
-@testable import App
-
 import Vapor
 import XCTVapor
 import AsyncHTTPClient
@@ -7,6 +5,9 @@ import XCTest
 import NIOCore
 import NIOEmbedded
 import NIOConcurrencyHelpers
+import HTTPTypes
+
+@testable import App
 
 final class AppTests: XCTestCase {
     func testApplicationStop() throws {
