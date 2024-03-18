@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import OpenAPIRuntime
 
 extension API {
     func createPost(_ input: Operations.createPost.Input) async throws -> Operations.createPost.Output {

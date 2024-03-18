@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import OpenAPIRuntime
 
 extension API {
     func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
