@@ -7,10 +7,8 @@
 
 import Vapor
 import Fluent
-import OpenAPIRuntime
 
-
-struct API: APIProtocol {
+extension API {
     func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
         
         do {
