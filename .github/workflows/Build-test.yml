@@ -15,30 +15,18 @@ jobs:
     strategy:
         matrix:
           os: [ubuntu-latest, macOS-latest]
+          
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Swift on macOS
+      if: contains(matrix.os, 'macOS')
+      uses: swift-actions/setup-swift@v2
+      with:
+        swift-version: 5.9.0
+    
     - name: Build
       run: swift build -v
     # - name: Run tests
       # run: swift test -v
-  # build-ubuntu:
-
-  #   runs-on: ubuntu-22.04
-
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Build
-  #     run: swift build -v
-  #   # - name: Run tests
-  #     # run: swift test -v
-
-  # build-mac:
-
-  #   runs-on: macos-13
-
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Build
-  #     run: swift build -v
-  #   # - name: Run tests
-  #     # run: swift test -v
