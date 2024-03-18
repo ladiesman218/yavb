@@ -6,8 +6,6 @@
 //
 
 import Fluent
-import FluentPostgresDriver
-import FluentSQL
 
 struct CreateUsers: AsyncMigration {
     let emailAddressConstraint = DatabaseSchema.Constraint.sql(raw: "CONSTRAINT email_regex_check CHECK (\(User.FieldKeys.email) ~* '\(emailAddressRegex)')")

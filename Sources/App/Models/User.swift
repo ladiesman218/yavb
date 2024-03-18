@@ -7,7 +7,6 @@
 
 import Vapor
 import Fluent
-import OpenAPIRuntime
 
 final class User: Model, Content {
     
