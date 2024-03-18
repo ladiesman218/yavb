@@ -53,15 +53,11 @@ let package = Package(
                 .product(name: "Fluent", package: "Fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Leaf", package: "leaf"),
+                .product(name: "Redis", package: "redis"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
+                .product(name: "Puppy", package: "Puppy")
             ]
-//                    resources: [
-//                        .copy("openapi/openapi-generator-config.yaml"),
-//                        .copy("openapi/openapi.yaml"),
-//                    ],
-//            plugins: [
-//                        .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
-//                    ]
         )
     ]
 )
