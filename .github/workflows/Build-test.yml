@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-test:
     name: ${{ matrix.os }}
     strategy:
       # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
@@ -32,4 +32,4 @@ jobs:
     - name: Build
       run: swift build -v
     - name: Run tests
-      run: swift test -v
+      run: swift test #-v
