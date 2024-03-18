@@ -18,28 +18,17 @@ jobs:
       # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
       # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        # The macos-latest tag is currently using macos 12(https://github.com/actions/runner-images?tab=readme-ov-file#available-images)
+        # which has xcode 14.2, which itself has swift 5.7.x
+        # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
+        os: [ubuntu-latest, macOS-13]
     runs-on: ${{ matrix.os }}
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    # - name: Install Swift 5.9
-    #   if: matrix.os == 'macOS-latest'   # 仅在 macOS 系统上安装 Swift
-    #   run: |
-    #     wget https://swift.org/builds/swift-5.9-release/xcode/swift-5.9-RELEASE/swift-5.9-RELEASE-osx.pkg
-    #     sudo installer -pkg swift-5.9-RELEASE-osx.pkg -target /
     
-    - name: Check Swift version
-      run: swift --version
-    # - name: Set up Swift on macOS
-    #   if: contains(matrix.os, 'macOS')
-    #   uses: swift-actions/setup-swift@v2
-    #   with:
-    #     swift-version: 5.9.0
-    
-    # - name: Build
-    #   run: swift build -v
+    - name: Build
+      run: swift build -v
     # - name: Run tests
       # run: swift test -v
