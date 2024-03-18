@@ -10,8 +10,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-test:
-    runs-on: ${{ matrix.os }}
+  build:
+    name: ${{ matrix.os }}
     strategy:
       fail-fast: false  
       # Set to false means even if actions on one os fails, other OS's will continue to be executed.
@@ -19,16 +19,25 @@ jobs:
       # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
       matrix:
         os: [ubuntu-latest, macOS-latest]
-          
+    runs-on: ${{ matrix.os }}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Swift on macOS
-      if: contains(matrix.os, 'macOS')
-      uses: swift-actions/setup-swift@v2
-      with:
-        swift-version: 5.9.0
+    # - name: Install Swift 5.9
+    #   if: matrix.os == 'macOS-latest'   # 仅在 macOS 系统上安装 Swift
+    #   run: |
+    #     wget https://swift.org/builds/swift-5.9-release/xcode/swift-5.9-RELEASE/swift-5.9-RELEASE-osx.pkg
+    #     sudo installer -pkg swift-5.9-RELEASE-osx.pkg -target /
+    
+    - name: Check Swift version
+      run: swift --version
+    # - name: Set up Swift on macOS
+    #   if: contains(matrix.os, 'macOS')
+    #   uses: swift-actions/setup-swift@v2
+    #   with:
+    #     swift-version: 5.9.0
     
     - name: Build
       run: swift build -v
