@@ -35,6 +35,10 @@ let package = Package(
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
                 .product(name: "Puppy", package: "Puppy")
             ],
+            exclude: [
+                "App/openapi/openapi-generator-config.yaml",
+                "App/openapi/openapi.yaml",
+            ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]
