@@ -15,7 +15,6 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.7.2"),
         // 🍃 An expressive, performant, and extensible templating language built for Swift.
         .package(url: "https://github.com/vapor/leaf.git", from: "4.2.4"),
-        
         .package(url: "https://github.com/vapor/redis.git", from: "4.0.0"),
         .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.2.1"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
@@ -44,15 +43,24 @@ let package = Package(
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]
         ),
-        .testTarget(name: "AppTests", dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor"),
-            
-            // Workaround for https://github.com/apple/swift-package-manager/issues/6940
-            .product(name: "Vapor", package: "vapor"),
-            .product(name: "Fluent", package: "Fluent"),
-            .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
-            .product(name: "Leaf", package: "leaf"),
-        ])
+        .testTarget(name: "AppTests",
+            dependencies: [
+                .target(name: "App"),
+                .product(name: "XCTVapor", package: "vapor"),
+                        
+                // Workaround for https://github.com/apple/swift-package-manager/issues/6940
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "Fluent", package: "Fluent"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
+                .product(name: "Leaf", package: "leaf"),
+            ],
+//                    resources: [
+//                        .copy("openapi/openapi-generator-config.yaml"),
+//                        .copy("openapi/openapi.yaml"),
+//                    ],
+            plugins: [
+                        .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
+                    ]
+        )
     ]
 )
