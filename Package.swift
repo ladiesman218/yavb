@@ -35,9 +35,10 @@ let package = Package(
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
                 .product(name: "Puppy", package: "Puppy")
             ],
-            exclude: [
-                "App/openapi/openapi-generator-config.yaml",
-                "App/openapi/openapi.yaml",
+            // Declare those files should be copied into the final executable file as resources
+            resources: [
+                .copy("openapi/openapi-generator-config.yaml"),
+                .copy("openapi/openapi.yaml"),
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
