@@ -13,15 +13,16 @@ jobs:
   build:
     name: ${{ matrix.os }}
     strategy:
-      fail-fast: false  
-      # Set to false means even if actions on one os fails, other OS's will continue to be executed.
+      # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
       # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
       # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
+      fail-fast: false  
+      # The macos-latest tag is currently using macos 12(https://github.com/actions/runner-images?tab=readme-ov-file#available-images)
+      # which has xcode 14.2, which itself has swift 5.7.x
+      # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
       matrix:
-        # The macos-latest tag is currently using macos 12(https://github.com/actions/runner-images?tab=readme-ov-file#available-images)
-        # which has xcode 14.2, which itself has swift 5.7.x
-        # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
         os: [ubuntu-latest, macOS-13]
+
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -30,5 +31,5 @@ jobs:
     
     - name: Build
       run: swift build -v
-    # - name: Run tests
-      # run: swift test -v
+    - name: Run tests
+      run: swift test -v
