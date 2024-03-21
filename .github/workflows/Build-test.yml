@@ -22,45 +22,30 @@ jobs:
       # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
       matrix:
         os: [ubuntu-latest, macOS-13]
-        include:
-          - os: ubuntu-latest
-            postgres_version: 12
-
             
     services:
       postgres:
         image: postgres:${{ matrix.postgres_version }}
-        ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
           POSTGRES_USER: myuser
           POSTGRES_PASSWORD: mypassword
-          POSTGRES_DB: mydatabase
+          POSTGRES_DB: testDB
+        ports:
+          - 5432:5432
 
           
     runs-on: 
       ${{ matrix.os }}
     
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Compile and test on macOS
-        if: ${{ contains(matrix.os, 'macos') }}
-        run: |
-          brew update
-          brew install --cask docker
-          which docker
-          swift build --configuration release
-          swift test --configuration release
-
-      # Step to compile and test on Ubuntu
-      - name: Compile and test on Ubuntu
-        if: ${{ contains(matrix.os, 'ubuntu') }}
-        run: |
-          swift build --configuration release
-          # swift test --configuration release
+      - name: Build on ${{ matrix.os }}
+        run: swift build --configuration release #-v
+      - name: Build
+        run: swift build --configuration release #-v
+    
       # - name: Checkout code
       #   uses: actions/checkout@v4
     
