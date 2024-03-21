@@ -10,8 +10,23 @@ on:
     branches: [ "main" ]
 
 jobs:
+
+  prepare-test-db:
+    name: prepare-test-db
+    runner-job:
+      runs-on: ubuntu-latest
+      services:
+          postgres:
+            image: postgres:latest
+            env:
+              POSTGRES_DB: test_db
+              POSTGRES_USER: test_user
+              POSTGRES_PASSWORD: test_password
+            ports:
+              - 5432:5432
+                #options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
   build-and-test:
-    name: ${{ matrix.os }}
+    name: Build and test on ${{ matrix.os }}
     strategy:
       # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
       # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
@@ -25,22 +40,11 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     
-    # services:
-    #       postgres:
-    #         image: postgres:13
-    #         env:
-    #           POSTGRES_DB: test_db
-    #           POSTGRES_USER: test_user
-    #           POSTGRES_PASSWORD: test_password
-    #         ports:
-    #           - 5432:5432
-    #         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-  
-    steps:
+      steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
     - name: Build
-      run: swift build --configuration release -v
+      run: swift build --configuration release #-v
     - name: Run tests
-      run: swift test --configuration release -v
+      run: swift test --configuration release #-v
