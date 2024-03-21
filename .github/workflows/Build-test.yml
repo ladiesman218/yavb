@@ -48,16 +48,14 @@ jobs:
         if: ${{ contains(matrix.os, 'macos') }}
         run: |
           brew update
-          brew install vapor
-          swift build
-          swift test
+          swift build --configuration release
+          swift test --configuration release
 
       # Step to compile and test on Ubuntu
       - name: Compile and test on Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           sudo apt update
-          sudo apt install vapor
           swift build --configuration release
           swift test --configuration release
       # - name: Checkout code
