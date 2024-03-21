@@ -25,22 +25,22 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     
-    services:
-          postgres:
-            image: postgres:13
-            env:
-              POSTGRES_DB: test_db
-              POSTGRES_USER: test_user
-              POSTGRES_PASSWORD: test_password
-            ports:
-              - 5432:5432
-            options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
+    # services:
+    #       postgres:
+    #         image: postgres:13
+    #         env:
+    #           POSTGRES_DB: test_db
+    #           POSTGRES_USER: test_user
+    #           POSTGRES_PASSWORD: test_password
+    #         ports:
+    #           - 5432:5432
+    #         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
     - name: Build
-      run: swift build --configuration release #-v
+      run: swift build --configuration release -v
     - name: Run tests
-      run: swift test --configuration release #-v
+      run: swift test --configuration release -v
