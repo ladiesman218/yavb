@@ -11,6 +11,15 @@ import HTTPTypes
 
 @testable import App
 final class AuthControllerTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        print("setting up")
+    }
+    override class func tearDown() {
+        super.tearDown()
+        print("tearing down")
+    }
+    
     let pathString = String(try! Servers.server1().relativePath.dropFirst() + "/auth")
     
     func testRegister() async throws {

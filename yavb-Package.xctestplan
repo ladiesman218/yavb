@@ -12,7 +12,18 @@
 
   },
   "testTargets" : [
-
+    {
+      "parallelizable" : true,
+      "skippedTests" : [
+        "AppTests",
+        "AuthControllerTests"
+      ],
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "AppTests",
+        "name" : "AppTests"
+      }
+    }
   ],
   "version" : 1
 }
