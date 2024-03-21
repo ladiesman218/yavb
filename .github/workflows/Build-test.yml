@@ -25,8 +25,8 @@ jobs:
             
     services:
       postgres:
-        image: postgres:${{ matrix.postgres_version }}
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        image: postgres:12
+        #options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
           POSTGRES_USER: myuser
           POSTGRES_PASSWORD: mypassword
