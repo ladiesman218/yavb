@@ -65,13 +65,13 @@ paths:
         '400':
           description: Failed response with a string value for the reason. This is due to given registration data is invalid.
           content:
-            application/json:
+            text/plain:
               schema:
                 $ref: "#/components/schemas/RegistrationError"
         '409':
           description: Failed response with a string value for the reason. This is due to given registration data have been taken.
           content:
-            application/json:
+            text/plain:
               schema:
                 $ref: "#/components/schemas/ServerConflictError"
 

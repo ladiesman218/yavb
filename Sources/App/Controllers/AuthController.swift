@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import OpenAPIRuntime
 
 extension API {
     func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
@@ -14,8 +15,8 @@ extension API {
         do {
             try Components.Schemas.RegisterInput.validate(content: request)
         } catch {
-            let ve = error as! ValidationsError
-            return .badRequest(.init(body: .json(ve.description)))
+            let e = error as! ValidationsError
+            return .badRequest(.init(body: .plainText(.init(stringLiteral: e.description))))
         }
         
         let registerInput: Components.Schemas.RegisterInput
@@ -25,15 +26,17 @@ extension API {
         }
         
         guard registerInput.password1 == registerInput.password2 else {
-            return .badRequest(.init(body: .json("Passwords must match")))
+            return .badRequest(.init(body: .plainText(.init(stringLiteral: "Passwords must match"))))
         }
         
         guard try await User.query(on: db).filter(\.$email == registerInput.email).first() == nil else {
-            return .conflict(.init(body: .json(.Email_space_has_space_been_space_taken)))
+            let reason = Components.Schemas.ServerConflictError.Email_space_has_space_been_space_taken.rawValue
+            return .conflict(.init(body: .plainText(.init(stringLiteral: reason))))
         }
         
         guard try await User.query(on: db).filter(\.$username == registerInput.username).first() == nil else {
-            return .conflict(.init(body: .json(.Username_space_has_space_been_space_taken)))
+            let reason = Components.Schemas.ServerConflictError.Username_space_has_space_been_space_taken.rawValue
+            return .conflict(.init(body: .plainText(.init(stringLiteral: reason))))
         }
         
         let hashedPassword = try Bcrypt.hash(registerInput.password1)
