@@ -35,16 +35,16 @@ jobs:
       ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Build
-        run: swift build --configuration release #-v
       - name: Install Vapor Toolbox
         run: |
           git clone https://github.com/vapor/toolbox.git
           cd toolbox
           git checkout main
           make install
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build
+        run: swift build --configuration release #-v
       - name: Test
         # run: swift test --configuration release #-v
         run: vapor test
