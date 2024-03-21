@@ -43,10 +43,15 @@ jobs:
     
     
     steps:
-
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Compile and test on macOS
         if: ${{ contains(matrix.os, 'macos') }}
         run: |
+          brew update
+          brew install docker
+          which docker
           swift build --configuration release
           swift test --configuration release
 
@@ -54,6 +59,7 @@ jobs:
       - name: Compile and test on Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
+          pwd
           swift build --configuration release
           swift test --configuration release
       # - name: Checkout code
