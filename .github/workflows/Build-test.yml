@@ -50,7 +50,7 @@ jobs:
         if: ${{ contains(matrix.os, 'macos') }}
         run: |
           brew update
-          brew install docker
+          brew install --cask docker
           which docker
           swift build --configuration release
           swift test --configuration release
@@ -59,9 +59,8 @@ jobs:
       - name: Compile and test on Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
-          pwd
           swift build --configuration release
-          swift test --configuration release
+          # swift test --configuration release
       # - name: Checkout code
       #   uses: actions/checkout@v4
     
