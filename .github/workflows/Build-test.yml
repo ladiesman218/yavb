@@ -11,40 +11,40 @@ on:
 
 jobs:
   build-and-test:
-    name: Build and test on ${{ matrix.os }}
-    strategy:
-      # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
-      # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
-      # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
-      fail-fast: false  
-      # The macos-latest tag is currently using macos 12(https://github.com/actions/runner-images?tab=readme-ov-file#available-images)
-      # which has xcode 14.2, which itself has swift 5.7.x
-      # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
-      matrix:
-        os: [ubuntu-latest, macOS-13]
+    name: Build and test on ubuntu
+    # strategy:
+    #   # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
+    #   # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.
+    #   # Which can be confusing cos we need to know if a commit is causing issues for one platform or all of them.
+    #   fail-fast: false  
+    #   # The macos-latest tag is currently using macos 12(https://github.com/actions/runner-images?tab=readme-ov-file#available-images)
+    #   # which has xcode 14.2, which itself has swift 5.7.x
+    #   # Here we use macOS-13 tag, with xcode 15.0.1 as default xcode and swift 5.9
+    #   matrix:
+    #     os: [ubuntu-latest, macOS-13]
             
     services:
       postgres:
         image: postgres:12
-        #options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
           POSTGRES_USER: myuser
           POSTGRES_PASSWORD: mypassword
-          POSTGRES_DB: testDB
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
 
           
     runs-on: 
-      ${{ matrix.os }}
+      ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build on ${{ matrix.os }}
-        run: swift build --configuration release #-v
       - name: Build
         run: swift build --configuration release #-v
+      - name: test
+        run: swift test --configuration release #-v
     
       # - name: Checkout code
       #   uses: actions/checkout@v4
