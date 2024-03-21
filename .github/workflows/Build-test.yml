@@ -46,4 +46,4 @@ jobs:
       - name: Build
         run: swift build --configuration release #-v
       - name: Test
-        run: swift test --enable-test-discovery #swift test --configuration release #-v
+        run: swift test --enable-test-discovery -v #swift test --configuration release #-v
