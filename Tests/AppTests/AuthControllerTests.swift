@@ -1,26 +1,26 @@
-//
-//  ControllerTests.swift
-//
-//
-//  Created by Lei Gao on 2024/3/19.
-//
+// //
+// //  ControllerTests.swift
+// //
+// //
+// //  Created by Lei Gao on 2024/3/19.
+// //
 
-import Vapor
-import XCTVapor
-import HTTPTypes
+// import Vapor
+// import XCTVapor
+// import HTTPTypes
 
-@testable import App
-final class AuthControllerTests: XCTestCase {
-    override class func setUp() {
-        super.setUp()
-        print("setting up")
-    }
-    override class func tearDown() {
-        super.tearDown()
-        print("tearing down")
-    }
+// @testable import App
+// final class AuthControllerTests: XCTestCase {
+//     override class func setUp() {
+//         super.setUp()
+//         print("setting up")
+//     }
+//     override class func tearDown() {
+//         super.tearDown()
+//         print("tearing down")
+//     }
     
-    let pathString = String(try! Servers.server1().relativePath.dropFirst() + "/auth")
+//     let pathString = String(try! Servers.server1().relativePath.dropFirst() + "/auth")
     
 //     func testRegister() async throws {
 //         let app = Application(.testing)
@@ -51,7 +51,7 @@ final class AuthControllerTests: XCTestCase {
 // //            XCTAssertEqual(res.status, .unprocessableEntity)
 // //            XCTAssertContains(res.body.string, "Empty Body")
 // //        }
-    }
+//     }
     
     
-}
+// }
