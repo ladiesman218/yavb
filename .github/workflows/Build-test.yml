@@ -40,24 +40,24 @@ jobs:
         uses: actions/checkout@v4
       - name: Build
         run: swift build --configuration release #-v
-      - name: run migrations
-        run: swift run App migrate
+      # - name: run migrations
+      #   run: swift run App migrate
       - name: Get env
         run: |
-          echo $POSTGRES_HOST 
+          echo $DATABASE_HOST 
           echo $DATABASE_NAME
           echo $POSTGRES_USER
-          echo $POSTGRES_PASSWORD
+          echo $DATABASE_PASSWORD
         
         
       - name: Test
         run: swift test --enable-test-discovery -v #swift test --configuration release #-v
         env:
           # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: localhost
+          DATABASE_HOST: localhost
           # The default PostgreSQL port
-          POSTGRES_PORT: 5432
-          POSTGRES_PASSWORD: vapor_password
+          DATABASE_PORT: 5432
+          DATABASE_PASSWORD: vapor_password
           # POSTGRES_DB: test_db
           DATABASE_NAME: test_db
-          POSTGRES_USER: vapor_username
+          DATABASE_USERNAME: vapor_username
