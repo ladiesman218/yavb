@@ -23,6 +23,7 @@ jobs:
     services:
       postgres:
         image: postgres:12
+        # Make sure to wait unitl this service is up and running then execute following steps
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
           POSTGRES_HOST: localhost
@@ -38,26 +39,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build
-        run: swift build --configuration release #-v
-      # - name: run migrations
-      #   run: swift run App migrate
-      - name: Get env
-        run: |
-          echo $DATABASE_HOST 
-          echo $DATABASE_NAME
-          echo $POSTGRES_USER
-          echo $DATABASE_PASSWORD
-        
-        
       - name: Test
         run: swift test --enable-test-discovery -v #swift test --configuration release #-v
         env:
-          # The hostname used to communicate with the PostgreSQL service container
           DATABASE_HOST: localhost
-          # The default PostgreSQL port
           DATABASE_PORT: 5432
           DATABASE_PASSWORD: vapor_password
-          # POSTGRES_DB: test_db
           DATABASE_NAME: test_db
           DATABASE_USERNAME: vapor_username
