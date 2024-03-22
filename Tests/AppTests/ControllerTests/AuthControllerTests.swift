@@ -32,6 +32,18 @@ final class AuthControllerTests: XCTestCase {
         }
         try app.testable().test(.POST, endpoint, beforeRequest: { req in
             try req.content.encode([
+                "email": "asdf@1234.",
+                "username": "asd",
+                "password1": "asdfasdf",
+                "password2": "asdfasdfs"
+            ], as: .json)
+        }) { res in
+            XCTAssertEqual(res.status, .badRequest)
+            XCTAssertContains(res.body.string, "Email address is invalid")
+//            XCTAssertContains(<#T##haystack: String?##String?#>, <#T##needle: String?##String?#>)
+        }
+        .test(.POST, endpoint, beforeRequest: { req in
+            try req.content.encode([
                 "email": "asdf@1234.com",
                 "username": "asdf",
                 "password1": "asdfasdf",

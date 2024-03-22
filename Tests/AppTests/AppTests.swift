@@ -13,6 +13,7 @@ final class AppTests: XCTestCase {
         super.tearDown()
         print("tearing down")
     }
+    
     func testApplicationStop() throws {
         let test = Environment(name: "testing", arguments: ["vapor"])
         let app = Application(test)
