@@ -3,7 +3,7 @@ import Leaf
 import Vapor
 
 // configures your application
-public func configure(_ app: Application) async throws {
+public func configure(_ app: Application) throws {
     app.http.server.configuration.port = 8082
     app.databases.use(DatabaseConfigurationFactory.postgres(configuration: .init(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
@@ -32,7 +32,7 @@ public func configure(_ app: Application) async throws {
     // Add migrations
     app.migrations.add(CreateUsers())
 
-    try await app.autoMigrate()
+    try app.autoMigrate().wait()
     app.views.use(.leaf)
 
     

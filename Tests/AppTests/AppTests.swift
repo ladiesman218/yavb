@@ -5,6 +5,14 @@ import NIOConcurrencyHelpers
 @testable import App
 
 final class AppTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        print("setting up")
+    }
+    override class func tearDown() {
+        super.tearDown()
+        print("tearing down")
+    }
     func testApplicationStop() throws {
         let test = Environment(name: "testing", arguments: ["vapor"])
         let app = Application(test)
