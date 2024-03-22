@@ -26,8 +26,8 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
           POSTGRES_HOST: localhost
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: mypassword
+          POSTGRES_USER: vapor_username
+          POSTGRES_PASSWORD: vapor_password
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
@@ -42,3 +42,11 @@ jobs:
         run: swift build --configuration release #-v
       - name: Test
         run: swift test --enable-test-discovery -v #swift test --configuration release #-v
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: localhost
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          POSTGRES_PASSWORD: vapor_password
+          POSTGRES_DB: test_db
+          POSTGRES_USER: vapor_username
