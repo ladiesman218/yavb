@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
-    name: Build and test on ubuntu
+  test:
+    name: Test on ubuntu
     # strategy:
     #   # Set fail-fast to false means even if actions on one os fails, other OS's will continue to be executed.
     #   # Otherwise it will cancel actions for other OS and mark the entire workflow run as failed.

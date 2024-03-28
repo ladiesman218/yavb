@@ -12,17 +12,17 @@ import OpenAPIRuntime
 extension API {
     func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
         
+        let registerInput: Components.Schemas.RegisterInput
+        switch input.body {
+            case .json(let json):
+                registerInput = json
+        }
+        
         do {
             try Components.Schemas.RegisterInput.validate(content: request)
         } catch {
             let e = error as! ValidationsError
             return .badRequest(.init(body: .plainText(.init(stringLiteral: e.description))))
-        }
-        
-        let registerInput: Components.Schemas.RegisterInput
-        switch input.body {
-            case .json(let json):
-                registerInput = json
         }
         
         guard registerInput.password1 == registerInput.password2 else {

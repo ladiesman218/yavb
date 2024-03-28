@@ -132,6 +132,3 @@ components:
               - username
               - password1
               - password2
-            enum:
-              - $request.body#/password1
-
