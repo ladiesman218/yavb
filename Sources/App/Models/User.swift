@@ -15,15 +15,20 @@ final class User: Model, Content {
     
     @ID() var id: UUID?
     @Field(key: FieldKeys.username) var username: String
-    @Field(key: FieldKeys.email) var email: String
+    @OptionalField(key: FieldKeys.email) var email: String?
+    @Field(key: FieldKeys.isEmailOn) var isEmailOn: Bool
+    @OptionalField(key: FieldKeys.phone) var phone: String?
+    @Field(key: FieldKeys.isPhoneOn) var isPhoneOn: Bool
     @Field(key: FieldKeys.password) var password: String
     
     init() {}
     
-    init(id: UUID? = nil, username: String, email: String, password: String) {
+    init(id: UUID? = nil, username: String, email: String?, phone: String?, password: String) {
         self.id = id
         self.username = username
         self.email = email
+        self.phone = phone
+//        if 
         self.password = password
     }
 }
@@ -35,15 +40,18 @@ extension User {
     struct FieldKeys {
         static let username: FieldKey = .init(stringLiteral: "username")
         static let email: FieldKey = .init(stringLiteral: "email")
+        static let isEmailOn: FieldKey = .init(stringLiteral: "is_email_on")
+        static let phone: FieldKey = .init(stringLiteral: "phone")
+        static let isPhoneOn: FieldKey = .init(stringLiteral: "is_phone_on")
         static let password: FieldKey = .init(stringLiteral: "password")
     }
 }
 
 extension Components.Schemas.RegisterInput: Validatable {
     static func validations(_ validations: inout Vapor.Validations) {
-        
         validations.add("email", as: String.self, is: .internationalEmail, required: true, customFailureDescription: "Email address is invalid")
-        validations.add("username", as: String.self, is: .count(4...32) && .alphanumeric)
-        validations.add("password1", as: String.self, is: .count(6...256))
+        validations.add("username", as: String.self, is: .count(4...32))
+        validations.add("phone", as: String.self, is: .pattern(Message.Recipient.phoneRegex))
+        validations.add("password1", as: String.self, is: .count(6...256) && .alphanumeric)
     }
 }
