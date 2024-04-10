@@ -6,7 +6,7 @@ import Puppy
 enum Entrypoint {
     static func main() async throws {
         var env = try Environment.detect()
-        
+//        env = .testing
         try configLogger(env: &env)
         
         let app = Application(env)
@@ -45,7 +45,8 @@ extension Entrypoint {
         
         // Implementations provided by Puppy
         let logFormat = LogFormatter()
-        let fileURL = URL(fileURLWithPath: "./yavb-logs/yavb.log").absoluteURL
+        let logPath = "./logs/yavb-\(Date().formatted(date: .abbreviated, time: .standard)).log"
+        let fileURL = URL(fileURLWithPath: logPath).absoluteURL
         let rotationConfig = RotationConfig(suffixExtension: .date_uuid,
                                             maxFileSize: 5 * 1024 * 1024,
                                             maxArchivedFilesCount: 5)

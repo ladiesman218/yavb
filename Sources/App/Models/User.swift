@@ -28,7 +28,8 @@ final class User: Model, Content {
         self.username = username
         self.email = email
         self.phone = phone
-//        if 
+        self.isEmailOn = email != nil
+        self.isPhoneOn = phone != nil
         self.password = password
     }
 }
@@ -49,9 +50,13 @@ extension User {
 
 extension Components.Schemas.RegisterInput: Validatable {
     static func validations(_ validations: inout Vapor.Validations) {
-        validations.add("email", as: String.self, is: .internationalEmail, required: true, customFailureDescription: "Email address is invalid")
-        validations.add("username", as: String.self, is: .count(4...32))
-        validations.add("phone", as: String.self, is: .pattern(Message.Recipient.phoneRegex))
+        validations.add("email", as: String.self, is: .internationalEmail, required: false, customFailureDescription: "Email address is invalid")
+        validations.add("phone", as: String.self, is: .pattern(Message.Recipient.phoneRegex), required: false, customFailureDescription: "Phone number is invalid")
+//        validations.add("email", as: String.self, is: .init(validate: { data in
+//            data == nil
+//        }))
+        
+//        validations.add("username", as: String.self, is: .count(4...32))
         validations.add("password1", as: String.self, is: .count(6...256) && .alphanumeric)
     }
 }

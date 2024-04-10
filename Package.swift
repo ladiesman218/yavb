@@ -32,7 +32,7 @@ let package = Package(
                 .product(name: "Redis", package: "redis"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
-                .product(name: "Puppy", package: "Puppy")
+                .product(name: "Puppy", package: "Puppy"),
             ],
             // Declare those files should be copied into the final executable file as resources
             resources: [

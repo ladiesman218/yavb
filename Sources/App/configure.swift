@@ -10,7 +10,7 @@ public func configure(_ app: Application) throws {
         port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
         username: Environment.get("DATABASE_USERNAME")!,
         password: Environment.get("DATABASE_PASSWORD")!,
-        database: Environment.get("DATABASE_NAME"),
+        database: (app.environment == .testing) ? "yavb_testing" : Environment.get("DATABASE_NAME"),
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
 
@@ -31,12 +31,13 @@ public func configure(_ app: Application) throws {
     
     // Add migrations
     app.migrations.add(CreateUsers())
-
+//    try app.autoRevert().wait()
     try app.autoMigrate().wait()
     app.views.use(.leaf)
-
     
-
     // register routes
     try routes(app)
+//    let recipient = try! Message.Recipient(name: "Test", contactInfo: "duncej@gmail.com")
+//    let mail = try! Message(to: [recipient], placeHolders: ["test"], template: "this is a \(Message.placeHolder) from yavb", subject: "Hi there")
+//    mail.send(client: app.client)
 }
