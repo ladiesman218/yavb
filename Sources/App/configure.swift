@@ -17,7 +17,6 @@ public func configure(_ app: Application) throws {
     // Config middlewares
     app.middleware = .init()    // Avoid use default middlewares, currently they are Vapor.RouteLoggingMiddleware, Vapor.ErrorMiddleware
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    app.middleware.use(OpenAPIMiddleware(), at: .end)
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     app.middleware.use(MyRouteLoggingMiddleware())
     let corsConfiguration = CORSMiddleware.Configuration(

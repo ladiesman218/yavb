@@ -1,4 +1,3 @@
-import Vapor
 import XCTVapor
 import NIOConcurrencyHelpers
 
@@ -232,17 +231,4 @@ final class AppTests: XCTestCase {
         XCTAssertEqual(returnedConfig.hostname, "0.0.0.0")
         XCTAssertEqual(returnedConfig.port, 3000)
     }
-    
-//    func testGetJSON() async throws {
-//        let handler: APIProtocol = Handler()
-//        let response = try await handler.getExampleJSON(query: .init(name: "Test"))
-//        XCTAssertEqual(response, .ok(.init(body: .json(.init(message: "Hello, Test!")))))
-//    }
-//    
-//    func testPostJSON() async throws {
-//        let handler: APIProtocol = Handler()
-//        let response = try await handler.postExampleJSON(body: .json(.init(message: "Hello, Test!")))
-//        XCTAssertEqual(response, .accepted(.init()))
-//    }
-
 }

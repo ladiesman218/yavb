@@ -1,6 +1,6 @@
 import Vapor
 
-enum Brevo {
+enum BrevoEmail {
     
     static let endpoint = URI(string: "https://api.brevo.com/v3/smtp/email")
     static let messageHTTPHeaders: HTTPHeaders = {

@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Lei Gao on 2024/3/8.
 //
@@ -9,7 +9,6 @@ import Vapor
 import Fluent
 
 final class User: Model, Content {
-    
     
     static let schema: String = "users"
     
@@ -23,20 +22,23 @@ final class User: Model, Content {
     
     init() {}
     
-    init(id: UUID? = nil, username: String, email: String?, phone: String?, password: String) {
+    init(id: UUID? = nil, username: String, email: String? = nil, isEmailOn: Bool = false, phone: String? = nil, isPhoneOn: Bool = false, password: String) throws {
         self.id = id
         self.username = username
         self.email = email
         self.phone = phone
-        self.isEmailOn = email != nil
-        self.isPhoneOn = phone != nil
-        self.password = password
+        self.isEmailOn = isEmailOn
+        self.isPhoneOn = isPhoneOn
+        let hashedPassword = try Bcrypt.hash(password)
+        self.password = hashedPassword
     }
 }
 
 extension User {
     static let usernameLength = 4 ... 32
     static let passwordLength = 6 ... 256
+    static let phoneRegex = "^(\\+[1-9]+(-[0-9]+)* )?[0]?[1-9][0-9\\- ][0-9]*$"
+    static let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9]+\\.?[A-Za-z0-9]+\\.[A-Za-z]{2,64}$"
     
     struct FieldKeys {
         static let username: FieldKey = .init(stringLiteral: "username")
@@ -48,15 +50,65 @@ extension User {
     }
 }
 
-extension Components.Schemas.RegisterInput: Validatable {
-    static func validations(_ validations: inout Vapor.Validations) {
-        validations.add("email", as: String.self, is: .internationalEmail, required: false, customFailureDescription: "Email address is invalid")
-        validations.add("phone", as: String.self, is: .pattern(Message.Recipient.phoneRegex), required: false, customFailureDescription: "Phone number is invalid")
-//        validations.add("email", as: String.self, is: .init(validate: { data in
-//            data == nil
-//        }))
+extension User {
+    struct DTO: Codable {
+        let id: UUID
+        let username: String
+        let email: String?
+        let phone: String?
+        let isEmailOn: Bool
+        let isPhoneOn: Bool
+    }
+    var dto: DTO {
+        get throws {
+            let id = try requireID()
+            return .init(id: id, username: username, email: email, phone: phone, isEmailOn: isEmailOn, isPhoneOn: isPhoneOn)
+        }
+    }
+}
+
+extension User {
+    struct RegisterInput: Decodable {
+        let contactInfo: String
+        let username: String
+        let password1: String
+        let password2: String
         
-//        validations.add("username", as: String.self, is: .count(4...32))
-        validations.add("password1", as: String.self, is: .count(6...256) && .alphanumeric)
+        var user: User {
+            get throws {
+                if contactInfo.range(of: User.emailRegex, options: .regularExpression) != nil {
+                    return try User(username: username, email: contactInfo, isEmailOn: true, password: password1)
+                } else if contactInfo.range(of: User.phoneRegex, options: .regularExpression) != nil {
+                    return try User(username: username, phone: contactInfo, isPhoneOn: true, password: password1)
+                } else {
+                    throw Abort(.badRequest)
+                }
+            }
+        }
+    }
+}
+
+extension User {
+    enum NotificationMethod {
+        case email
+        case sms
+        case all
+    }
+    var notificationMethod: NotificationMethod {
+        if isEmailOn && isPhoneOn {
+            return .all
+        } else if isEmailOn {
+            return .email
+        } else {
+            return .sms
+        }
+    }
+}
+
+extension User.RegisterInput: Validatable {
+    static func validations(_ validations: inout Vapor.Validations) {
+        validations.add("contactInfo", as: String.self, is: .pattern(User.phoneRegex) || .internationalEmail || .phoneNumber, customFailureDescription: "Invalid contact info")
+        validations.add("username", as: String.self, is: .count(User.usernameLength))
+        validations.add("password1", as: String.self, is: .count(User.passwordLength) && .ascii)
     }
 }

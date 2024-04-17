@@ -7,48 +7,43 @@
 
 import Vapor
 import Fluent
-import OpenAPIRuntime
 
-extension API {
-    func register(_ input: Operations.register.Input) async throws -> Operations.register.Output {
+struct AuthController: RouteCollection {
+    func boot(routes: any Vapor.RoutesBuilder) throws {
+        let auth = routes.grouped("api", "auth")
+        auth.post("register", use: register)
+    }
+    
+    func register(_ req: Request) async throws -> Response {
+        let a = MessageType.email(address: "asdf@asdf.com")
+        let encoder = JSONEncoder()
+        let b = try! encoder.encode(a)
+        let jsonString = String(data: b, encoding: .utf8)
+        print(jsonString)
         
-        let registerInput: Components.Schemas.RegisterInput
+        try User.RegisterInput.validate(content: req)
+        let input = try req.content.decode(User.RegisterInput.self)
         
-        switch input.body {
-            case .json(let json):
-                registerInput = json
+        guard input.password1 == input.password2 else {
+            throw Abort(.badRequest, reason: "Passwords don't match")
         }
         
-        do {
-            try Components.Schemas.RegisterInput.validate(content: request)
-        } catch {
-            let e = error as! ValidationsError
-            return .badRequest(.init(body: .plainText(.init(stringLiteral: e.description))))
-        }
+        // Check db conflicts
+        async let foundUsername = User.query(on: req.db).filter(\.$username == input.username).first()
+        async let foundContact = User.query(on: req.db).group { group in
+            group.filter(\.$email == input.contactInfo)
+            group.filter(\.$phone == input.contactInfo)
+        }.first()
         
-//        guard registerInput.contactInfo == registerInput.value2.password2 else {
-//            return .badRequest(.init(body: .plainText(.init(stringLiteral: "Passwords must match"))))
-//        }
-//        
-//        guard try await User.query(on: db).filter(\.$email == registerInput.value1).first() == nil || registerInput.value1.self == nil else {
-//            let reason = Components.Schemas.ServerConflictError.Email_space_has_space_been_space_taken.rawValue
-//            return .conflict(.init(body: .plainText(.init(stringLiteral: reason))))
-//        }
-//        
-//        guard try await User.query(on: db).filter(\.$phone == registerInput.phone).first() == nil || registerInput.phone == nil else {
-//            let reason = Components.Schemas.ServerConflictError.Phone_space_number_space_has_space_been_space_taken.rawValue
-//            return .conflict(.init(body: .plainText(.init(stringLiteral: reason))))
-//        }
-//        
-//        guard try await User.query(on: db).filter(\.$username == registerInput.username).first() == nil else {
-//            let reason = Components.Schemas.ServerConflictError.Username_space_has_space_been_space_taken.rawValue
-//            return .conflict(.init(body: .plainText(.init(stringLiteral: reason))))
-//        }
-//        
-//        let hashedPassword = try Bcrypt.hash(registerInput.password1)
-//        let user = User(username: registerInput.username, email: registerInput.email, phone: "12312312", password: hashedPassword)
+        guard try await foundContact == nil else { throw Abort(.conflict, reason: "Contact info exists") }
+        guard try await foundUsername == nil else { throw Abort(.conflict, reason: "Username exists") }
         
-//        try await user.create(on: db)
-        return .created(.init())
-    }    
+        let user = try input.user
+        
+        try await user.save(on: req.db)
+        return Response(status: .created)
+    }
+    
 }
+
+
