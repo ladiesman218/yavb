@@ -13,7 +13,7 @@ enum Entrypoint {
         defer { app.shutdown() }
         
         do {
-            try configure(app)
+            try await configure(app)
         } catch {
             app.logger.report(error: error)
             throw error
@@ -45,9 +45,9 @@ extension Entrypoint {
         
         // Implementations provided by Puppy
         let logFormat = LogFormatter()
-        let logPath = "./logs/yavb-\(Date().formatted(date: .abbreviated, time: .standard)).log"
+        let logPath = "./logs/yavb.log"
         let fileURL = URL(fileURLWithPath: logPath).absoluteURL
-        let rotationConfig = RotationConfig(suffixExtension: .date_uuid,
+        let rotationConfig = RotationConfig(suffixExtension: .numbering,
                                             maxFileSize: 5 * 1024 * 1024,
                                             maxArchivedFilesCount: 5)
         let fileRotation = try FileRotationLogger("top.douwone.yavb.persist",

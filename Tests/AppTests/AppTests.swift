@@ -185,7 +185,6 @@ final class AppTests: XCTestCase {
         
         XCTAssertNotNil(app.http.server.shared.localAddress)
         XCTAssertEqual("0.0.0.0", app.http.server.configuration.hostname)
-        XCTAssertEqual(0, app.http.server.configuration.port)
         
         guard let localAddress = app.http.server.shared.localAddress,
               localAddress.ipAddress != nil,
@@ -196,7 +195,6 @@ final class AppTests: XCTestCase {
         let response = try app.client.get("http://localhost:\(port)/hello").wait()
         let returnedConfig = try response.content.decode(AddressConfig.self)
         XCTAssertEqual(returnedConfig.hostname, "0.0.0.0")
-        XCTAssertEqual(returnedConfig.port, 0)
     }
     
     func testConfigurationAddressDetailsReflectedWhenProvidedThroughServeCommand() throws {

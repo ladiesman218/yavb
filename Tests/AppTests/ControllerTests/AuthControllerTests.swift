@@ -6,7 +6,7 @@ final class AuthControllerTests: XCTestCase {
     var app: Application!
     override func setUp() async throws {
         try await super.setUp()
-        app = try Application.testable()
+        app = try await Application.testable()
     }
     
     override func tearDown() {

@@ -1,0 +1,223 @@
+#extend("header"):
+#export("auth"):
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="envelope-fill" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+    </symbol>
+    <symbol id="lock-fill" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
+    </symbol>
+    <symbol id="person-fill" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+    </symbol>
+</svg>
+
+<!-- Register modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-body-secondary">
+            <div class="modal-header text-body-tertiary border-0">
+                <h5 class="container text-center modal-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Register Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="line-border">with</div>
+            <div class="container modal-body text-center">
+                <form class="needs-validation" novalidate action="/api/auth/register" method="post" id="register">
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
+                        </span>
+                        <input type="email" class="form-control pt-xxl-3 pb-xxl-3" name="email" placeholder="Email" pattern="^[A-Z0-9a-z._%+-]+@([A-Za-z0-9]+\.)?[A-Za-z0-9]+\.[A-Za-z]{2,64}$" required />
+                        <div class="invalid-feedback">
+                            Invalid Email Address
+                        </div>
+                    </div>
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#person-fill"></use></svg>
+                        </span>
+                        <input type="text" class="form-control pt-xxl-3 pb-xxl-3" name="username" placeholder="Username" minlength="4" maxlength="32" required />
+                        <div class="invalid-feedback">
+                            Between 4 - 32 characters
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#lock-fill"></use></svg>
+                        </span>
+                        <input type="password" class="form-control pt-xxl-3 pb-xxl-3" id="password1" name="password1" placeholder="Password" minlength="6" maxlength="256" autocomplete="new-password" required />
+                        <div class="invalid-feedback">
+                            Less than 6 characters
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#lock-fill"></use></svg>
+                        </span>
+                        <input type="password" class="form-control pt-xxl-3 pb-xxl-3" id="password2" name="password2" placeholder="Password Again" minlength="6" maxlength="256" autocomplete="new-password" required />
+                        <div class="invalid-feedback">
+                            Must be exact same as Password1
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                        Register
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="text-start text-secondary">
+                    Got an account? <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                </span>
+                <span class="text-end">
+                    <a href="#" class="text-decoration-none">Forgot password?</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Login modal, https://dribbble.com/shots/2017511-Login-Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-body-secondary">
+            <div class="modal-header text-body-tertiary border-0">
+                <h5 class="container text-center modal-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="line-border">with</div>
+            <div class="container modal-body text-center">
+                <form class="needs-validation" novalidate action="/api/auth/login" method="post" id="login">
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
+                        </span>
+                        <input type="text" class="form-control pt-xxl-3 pb-xxl-3" name="username" placeholder="Email/Username" minlength="4" maxlength="256" required />
+                        <div class="invalid-feedback">
+                            Between 4 - 32 characters
+                        </div>
+                    </div>
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#lock-fill"></use></svg>
+                        </span>
+                        <input type="password" class="form-control pt-xxl-3 pb-xxl-3" name="password" placeholder="Password" minlength="6" maxlength="256" required />
+                        <div class="invalid-feedback">
+                            Less than 6 characters
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="text-start text-secondary">
+                    New Here? <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</a>
+                </span>
+                <span class="text-end">
+                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#forgetPasswordModal">Forgot password?</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Request new passwork link modal -->
+<div class="modal fade" id="forgetPasswordModal" tabindex="-1" aria-labelledby="forgetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-body-secondary">
+            <div class="modal-header text-body-tertiary">
+                <h5 class="container text-center modal-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reset Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="container modal-body">
+                <form class="needs-validation" novalidate action="/api/auth/PWchange" method="post" id="PWchange">
+                    <div class="alert alert-info small d-flex align-items-center" id="alertDiv">
+                        <svg class="me-2 svg-container"><use href="#info-circle-fill"></use></svg>
+                        Email with a link to reset password will be sent
+                    </div>
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
+                        </span>
+                        <input type="email" class="form-control pt-xxl-3 pb-xxl-3" name="email" placeholder="Email address for your account" pattern="^[A-Z0-9a-z._%+-]+@([A-Za-z0-9]+\.)?[A-Za-z0-9]+\.[A-Za-z]{2,64}$" required />
+                        <div class="invalid-feedback">
+                            Invalid Email
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                        Send Link
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="text-start text-secondary">
+                    New Here? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</a>
+                </span>
+                <span class="text-end">
+                    <a href="#" class="text-decoration-none">Forgot password?</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Set new password modal -->
+<div class="modal fade" id="newPasswordModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-body-secondary">
+            <div class="modal-header text-body-tertiary">
+                <h5 class="container text-center modal-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New Password</h5>
+            </div>
+            <div class="container modal-body">
+                <form class="needs-validation" novalidate action="/api/auth/changePW/#(jwt)" method="post" id="changePW">
+                    <div class="alert alert-info small d-flex align-items-center" id="alertDiv">
+                        <svg class="me-2 svg-container"><use href="#info-circle-fill"></use></svg>
+                        Type in your new password
+                    </div>
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#lock-fill"></use></svg>
+                        </span>
+                        <input type="password" class="form-control pt-xxl-3 pb-xxl-3" id="password1" name="password1" placeholder="New Password" autocomplete="new-password" minlength="6" maxlength="256" required />
+                        <div class="invalid-feedback">
+                            Less than 6 characters
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 input-group has-validation">
+                        <span class="input-group-text bg-body">
+                            <svg class="bi theme-icon svg-container"><use href="#lock-fill"></use></svg>
+                        </span>
+                        <input type="password" class="form-control pt-xxl-3 pb-xxl-3" id="password2" name="password2" placeholder="New Password" autocomplete="new-password" minlength="6" maxlength="256" required />
+                        <div class="invalid-feedback">
+                            Must be exact same as Password1
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                        Submit
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="text-start text-secondary">
+                    New Here? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</a>
+                </span>
+                <span class="text-end">
+                    <a href="#" class="text-decoration-none">Forgot password?</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/auth.js"></script>
+#import("footer")
+#endexport
+#endextend
