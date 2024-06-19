@@ -140,7 +140,7 @@ struct AuthController: RouteCollection {
               let user = try await User.find(userID, on: req.db)
         else { throw Abort(.badRequest) }
         
-        let keyCollection = await JWTKeyCollection().addHMAC(key: user.password, digestAlgorithm: .sha256)
+        let keyCollection = await JWTKeyCollection().add(hmac: .init(from: user.password), digestAlgorithm: .sha256)
         let _ = try await keyCollection.verify(jwt, as: UserJWT.self)
         user.password = try Bcrypt.hash(content.password1)
         try await user.save(on: req.db)

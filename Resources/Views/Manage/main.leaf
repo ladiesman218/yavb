@@ -1,0 +1,8 @@
+#extend("/Manage/footer"):
+#export("main"):
+
+<main class="bg-warning container-xxl bd-gutter mt-3 my-md-4 bd-layout">
+asdf
+</main>
+#endexport
+#endextend

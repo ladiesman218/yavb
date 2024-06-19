@@ -1,4 +1,4 @@
-import Fluent
+import FluentPostgresDriver
 
 struct CreateOTPs: AsyncMigration {
     func prepare(on database: any FluentKit.Database) async throws {

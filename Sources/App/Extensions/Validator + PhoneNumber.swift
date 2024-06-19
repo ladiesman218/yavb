@@ -4,7 +4,7 @@ extension Validator where T == String {
     /// Validates whether a `String` is a valid phone number.
     public static var phoneNumber: Validator<T> {
         .init {
-            guard let range = $0.range(of: regex, options: [.regularExpression]), range.lowerBound == $0.startIndex && range.upperBound == $0.endIndex
+            guard let range = $0.range(of: User.phoneRegex, options: [.regularExpression]), range.lowerBound == $0.startIndex && range.upperBound == $0.endIndex
             else {
                 return ValidatorResults.PhoneNumber(isValidPhoneNumber: false)
             }
@@ -35,4 +35,3 @@ extension ValidatorResults.PhoneNumber: ValidatorResult {
     }
 }
 
-private let regex: String = "(\\+[1-9]+(-[0-9]+)* )?[0]?[1-9][0-9\\- ][0-9]*$ "

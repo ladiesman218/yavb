@@ -1,3 +1,5 @@
+'use strict';
+
 // Customized async function to make a request, will return response, data(json) and error.
 async function makeRequest(endPoint, method, encodeType, body) {
     let result = {response: null, data: null, error: null};

@@ -31,15 +31,21 @@
             <li><a href="about" class="nav-link px-2 text-white">About</a></li>
         </ul>
         
-        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+        <form class="col-6 col-lg-auto me-2" role="search">
             <input type="search" class="form-control form-control-dark text-bg-secondary" placeholder="Search..." aria-label="Search">
         </form>
         
-        <div class="text-end">
+        <div id="authButtons" class="text-end">
             <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal"> Login </button>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</button>
-            
-            <span class="align-items-center dropdown color-modes ms-3">
+        </div>
+        
+        <div id="manageLink" class="text-end">
+            <a class="btn" href="/manage">Manage</a>
+        </div>
+        
+        <div>
+            <span class="align-items-center dropdown color-modes">
                 <button class="btn btn-link text-decoration-none py-2 dropdown-toggle align-items-center"
                     id="bd-theme"
                     type="button"

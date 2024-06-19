@@ -17,16 +17,17 @@ public func configure(_ app: Application) async throws {
         database: Environment.get("DATABASE_NAME")!,
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
-    
+    app.fluent.pagination.pageSizeLimit = 50
     // The session driver should be configured before adding app.sessions.middleware to your application.
-    app.sessions.configuration = .init(cookieName: "yavb", cookieFactory: { sessionID in
+    app.sessions.configuration = .init(cookieName: "yavb-session", cookieFactory: { sessionID in
 #warning("TODO: add queue job to delete session by id when after one month of its creation")
         return .init(string: sessionID.string,
                      // expires and maxAge are essentially the same thing, for supporting different browsers. Set to 30 minutes, this will be updated upon each following request automatically(meaning following requests will extend a new 30 mins expiration time). This only returned in response cookies, and can be manually changed on client side, server has no way to track how long a sesion hasn't been activated unless each request updates(writes) db.
                      expires: Date(
                         timeIntervalSinceNow: 60 * 30
                      ),
-                     maxAge: 60 * 30,
+//                     maxAge: 60 * 30,
+                     maxAge: 86400 * 7,
                      domain: nil,
                      path: "/",
                      // isSecure requires https.
@@ -55,12 +56,16 @@ public func configure(_ app: Application) async throws {
     // cors middleware should come before default error middleware using `at: .beginning`
     app.middleware.use(cors, at: .beginning)
     
-    await app.jwt.keys.addHMAC(key: Environment.get("JWT_SECRET") ?? "secret", digestAlgorithm: .sha256)
+    let jwtSecret = Environment.get("JWT_SECRET") ?? "secret"
+    await app.jwt.keys.add(hmac: .init(from: jwtSecret), digestAlgorithm: .sha256)
     
     // Add migrations
     app.migrations.add(CreateUsers())
     app.migrations.add(SessionRecord.migration)
     app.migrations.add(CreateOTPs())
+    app.migrations.add(CreateBlogPosts())
+    app.migrations.add(CreateTags())
+    app.migrations.add(CreateBlogTagPivot())
 //    try await app.autoRevert()
     try await app.autoMigrate()
     app.views.use(.leaf)

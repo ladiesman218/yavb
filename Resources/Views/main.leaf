@@ -1,11 +1,29 @@
 #extend("footer"):
 #export("main"):
-<div class="p-3">
-    <div class="container d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        
-        Hello World
-    </div>
-</div>
+<main class="p-3 container d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+    <ol class="list-unstyled">
+        #for(post in posts):
+        <li class="bg-body-secondary rounded-4 my-3">
+            <!--Title and update time-->
+            <div class="d-flex justify-content-between p-3 pb-0">
+                <h2>#(post.title)</h2>
+                <span class="text-end d-flex align-items-center">
+                    Updated:
+                    <span class="unixTime">#(post.updatedAt)</span>
+                </span>
+            </div>
+            <!--Tags-->
+            <ul class="ul list-inline px-3">
+                #for(tag in post.tags):
+                <button class="list-inline-item btn btn-sm bg-info">#(tag.name)</button>
+                #endfor
+            </ul>
+            
+            <div class="p-3">#(post.content)</div>
+        </li>
+        #endfor
+    </ol>
+</main>
 #endexport
 #endextend
 

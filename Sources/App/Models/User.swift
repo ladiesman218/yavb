@@ -10,6 +10,7 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: FieldKeys.password) var password: String
     @Field(key: FieldKeys.activated) var activated: Bool
     @Children(for: \OTP.$user) var otps: [OTP]
+    @Children(for: \BlogPost.$author) var posts: [BlogPost]
     
     init() {}
     
@@ -29,6 +30,7 @@ extension User {
     static let usernameLength = 4 ... 32
     static let passwordLength = 6 ... 256
     static let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9]+\\.?[A-Za-z0-9]+\\.[A-Za-z]{2,64}$"
+    static let phoneRegex: String = "(\\+[1-9]+(-[0-9]+)* )?[0]?[1-9][0-9\\- ][0-9]*$"
     
     struct FieldKeys {
         static let username: FieldKey = .init(stringLiteral: "username")
@@ -102,7 +104,7 @@ extension User {
         let payload = UserJWT(subject: subject, audience: .init(stringLiteral: id.uuidString))
         let jwt: String
         if subject == .changePW {
-            let keyCollection = await JWTKeyCollection().addHMAC(key: self.password, digestAlgorithm: .sha256)
+            let keyCollection = await JWTKeyCollection().add(hmac: .init(from: self.password), digestAlgorithm: .sha256)
             jwt = try await keyCollection.sign(payload)
         } else {
             jwt = try await req.jwt.sign(payload)

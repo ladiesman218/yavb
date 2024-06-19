@@ -1,11 +1,4 @@
-//
-//  File.swift
-//
-//
-//  Created by Lei Gao on 2024/3/8.
-//
-
-import FluentSQL
+import FluentPostgresDriver
 
 struct CreateUsers: AsyncMigration {
     // MARK: - Field Constraints
