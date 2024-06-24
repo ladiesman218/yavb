@@ -1,27 +1,21 @@
 import Vapor
+import Leaf
 
 struct PublicFEController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
+        let routes = routes.grouped(User.sessionAuthenticator())
         routes.get(use: getRecent)
     }
     
-//    func getHome(_ req: Request) async throws -> View {
-//        try await req.view.render("main")
-//    }
     func getRecent(_ req: Request) async throws -> View {
-        try await Self.renderHome(req)
+        let userDTO = try? req.auth.require(User.self).dto
+        return try await Self.renderHome(req, userDTO: userDTO)
     }
     
-    static func renderHome(_ req: Request, js: String? = nil) async throws -> View {
+    static func renderHome(_ req: Request, title: String? = nil, js: String? = nil, jwt: String? = nil, userDTO: User.DTO? = nil) async throws -> View {
         let posts = try await PublicBlogController().getRecent(req)
-        return try await req.view.render("main", MainContext(title: "Welcome to Yet Another Vapor Blog", posts: posts, script: js))
-    }
-}
-
-extension PublicFEController {
-    struct MainContext: Encodable {
-        let title: String
-        let posts: [BlogPost.DTO]
-        var script: String? = nil
+        let context = PublicContext(title: title ?? "Welcome to \(siteName)", posts: posts, script: js, jwt: jwt, userDTO: userDTO)
+        
+        return try await req.view.render("main", context)
     }
 }
