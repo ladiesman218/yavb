@@ -3,7 +3,7 @@
 const alertID = 'alertDiv';
 const registerFormID = 'register';
 const loginFormID = 'login';
-// Modal id for request new password, used in FrontendAuthController to allow js script to open the modal programmatically.
+// Modal id for request new password, used in FrontendAuthController to allow js script to open the modal programmatically, also in handleChangePW() to remove modal's data-bs-backdrop attribute so users can close the modal when a new password has been updated successfully.
 const setNewPasswordModalID = 'newPasswordModal';
 // Form id for request new password, used to handle response.
 const requestNewPWFormID = 'PWchange';
@@ -44,7 +44,7 @@ function handleRequestPWChange(result) {
     if (response.ok) {
         appendAlert(
                     form,
-                    'Email Sent. Visit the link in your email to set a new password',
+                    'Success. Pleas check your mailbox and follow instructions there.',
                     'success'
                     )
     } else {
@@ -65,9 +65,28 @@ function handleChangePW(result) {
     if (response.ok) {
         appendAlert(
                     form,
-                    'New password set, login again',
+                    'New password set, click anywhere outside this pop up window and login again',
                     'success'
-                    )
+                    );
+        
+        const currentModal = document.querySelector("#" + setNewPasswordModalID);
+        // Remove attributes that forbidden users to dismiss the modal
+        currentModal.removeAttribute('data-bs-backdrop');
+        currentModal.removeAttribute('data-bs-keyboard');
+        // Add attribute that enables this behavior
+        currentModal.setAttribute('data-bs-dismiss', "modal");
+        // Add a button to close the modal so users can click on it.
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.classList.add('btn-close');
+        close.setAttribute('data-bs-dismiss', 'modal');
+        close.setAttribute('aria-label', 'Close');
+        const modalHeader = currentModal.querySelectorAll('.modal-header')[0];
+        modalHeader.appendChild(close);
+        // When modal is dismissed, replace address to home otherwise reset endpoint will be left over.
+        currentModal.addEventListener('hidden.bs.modal', event => {
+            window.location.replace('/');
+        })
     } else {
         const json = result.data;
         appendAlert(

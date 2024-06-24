@@ -100,10 +100,10 @@ const appendAlert = (parent, message, type) => {
     wrapper.id = alertID;
     
     wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+        `<div class="alert alert-${type} alert-dismissible d-flex align-items-center justify-content-center" role="alert">`,
         `<svg class="bi me-2 svg-container"><use href="#${icon}"></use></svg>`,
         `${message}`,
-        `<button type="button" class="btn-close" onclick="closeAlertIn(this.parentElement)" aria-label="Close"></button>`,
+        `<button type="button" class="btn-close" onclick="closeAlertIn(this.parentElement.parentElement.parentElement)" aria-label="Close"></button>`,
         '</div>'
     ].join('');
 
