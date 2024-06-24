@@ -13,7 +13,16 @@ struct ProtectedBlogController: RouteCollection {
     func add(_ req: Request) async throws -> HTTPStatus {
         let userID = try req.auth.require(User.self).requireID()
         let input = try req.content.decode(BlogPost.CreateInput.self)
-        let blog = App.BlogPost(title: input.title, excerpt: input.excerpt ?? "", content: input.content, authorID: userID, type: input.type, isPublished: input.isPublished)
+        let type: BlogPost.PostType
+        if let typeString = input.type {
+            guard let t = BlogPost.PostType.init(rawValue: typeString) else {
+                throw Abort(.badRequest, reason: "Post type Invalid")
+            }
+            type = t
+        } else {
+            type = BlogPost.PostType.post
+        }
+        let blog = App.BlogPost(title: input.title, excerpt: input.excerpt ?? "", content: input.content, authorID: userID, type: type, isPublished: input.isPublished ?? true)
         try await blog.save(on: req.db)
         
         guard let tagNames = input.tags else { return .created }
@@ -51,7 +60,12 @@ struct ProtectedBlogController: RouteCollection {
         if let title = input.title { post.title = title }
         if let excerpt = input.excerpt { post.excerpt = excerpt }
         if let content = input.content { post.content = content }
-        if let type = input.type { post.type = type }
+        if let typeString = input.type {
+            guard let t = BlogPost.PostType.init(rawValue: typeString) else {
+                throw Abort(.badRequest, reason: "Post type Invalid")
+            }
+            post.type = t
+        }
         if let isPublished = input.isPublished { post.isPublished = isPublished }
         
         if let tagNames = input.tags {

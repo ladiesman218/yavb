@@ -10,7 +10,7 @@ final class BlogPost: Model, Content, @unchecked Sendable {
     @Field(key: FieldKeys.excerpt) var excerpt: String
     @Field(key: FieldKeys.content) var content: String
     @Parent(key: FieldKeys.authorID) var author: User
-    @Field(key: FieldKeys.type) var type: PostType
+    @Enum(key: FieldKeys.type) var type: PostType
     @Field(key: FieldKeys.isPublished) var isPublished: Bool
     @Timestamp(key: FieldKeys.createdAt, on: .create) var createdAt: Date?
     @Timestamp(key: FieldKeys.updatedAt, on: .update) var updatedAt: Date? 
@@ -18,7 +18,7 @@ final class BlogPost: Model, Content, @unchecked Sendable {
     
     init() {}
     
-    init(id: BlogPost.IDValue? = nil, title: String, excerpt: String, content: String, authorID: User.IDValue, type: PostType, isPublished: Bool = true) {
+    init(id: BlogPost.IDValue? = nil, title: String, excerpt: String, content: String, authorID: User.IDValue, type: PostType = .post, isPublished: Bool = true) {
         self.id = id
         self.title = title
         self.excerpt = excerpt
@@ -57,6 +57,7 @@ extension BlogPost {
         let updatedAt: Date?
         let tags: [Tag]
     }
+    
     // Less info than User.DTO
     struct AuthorDTO: Codable {
         let id: UUID
@@ -75,8 +76,8 @@ extension BlogPost {
         let content: String
         let excerpt: String?
         let tags: [String]?
-        let type: BlogPost.PostType
-        let isPublished: Bool
+        let type: PostType.RawValue?
+        let isPublished: Bool?
     }
     
     struct UpdateInput: Content {
@@ -84,7 +85,7 @@ extension BlogPost {
         let excerpt: String?
         let content: String?
         let tags: [String]?
-        let type: PostType?
+        let type: PostType.RawValue?
         let isPublished: Bool?
     }
 }
