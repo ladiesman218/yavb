@@ -1,10 +1,6 @@
 import FluentPostgresDriver
-import JWTKit
 import Fluent
-import Leaf
 import Vapor
-//import JWT
-//import JWTKit
 
 // configures your application
 public func configure(_ app: Application) async throws {
@@ -19,7 +15,7 @@ public func configure(_ app: Application) async throws {
     ), as: .psql)
     app.fluent.pagination.pageSizeLimit = 50
     // The session driver should be configured before adding app.sessions.middleware to your application.
-    app.sessions.configuration = .init(cookieName: "yavb-session", cookieFactory: { sessionID in
+    app.sessions.configuration = .init(cookieName: sessionCookieName, cookieFactory: { sessionID in
 #warning("TODO: add queue job to delete session by id when after one month of its creation")
         return .init(string: sessionID.string,
                      // expires and maxAge are essentially the same thing, for supporting different browsers. Set to 30 minutes, this will be updated upon each following request automatically(meaning following requests will extend a new 30 mins expiration time). This only returned in response cookies, and can be manually changed on client side, server has no way to track how long a sesion hasn't been activated unless each request updates(writes) db.
@@ -33,7 +29,7 @@ public func configure(_ app: Application) async throws {
                      // isSecure requires https.
                      isSecure: (app.environment == .production) ? true : false,
                      // isHTTPOnly prevent cookies be accessed by js.
-                     isHTTPOnly: (app.environment == .production) ? true : false,
+                     isHTTPOnly: true,
                      sameSite: .lax
         )
     })
@@ -41,9 +37,11 @@ public func configure(_ app: Application) async throws {
     
     // Config middlewares
     app.middleware = .init()    // Avoid use default middlewares, currently they are Vapor.RouteLoggingMiddleware, Vapor.ErrorMiddleware
-    app.middleware.use(MyRouteLoggingMiddleware())
+    app.middleware.use(MyRouteLoggingMiddleware(logLevel: app.environment == .production ? .info : .warning))
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     app.middleware.use(app.sessions.middleware)
+    // Cusomized middleware to check if the session cookie has expired. If yes, removes record from db and frontend.
+    app.middleware.use(SessionAuthMiddleware())
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     // Use sessions middleware globally, but only config to use sessionAuthenticator() on frontend routes later.
     
