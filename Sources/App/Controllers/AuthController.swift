@@ -4,10 +4,22 @@ import SMTPKitten
 import JWTKit
 
 struct AuthController: RouteCollection {
+    
+    static func sendActivationEmail(_ req: Request, email: String) async throws {
+        guard let user = try await User.query(on: req.db).filter(\.$email == email).first() else {
+            throw Abort(.notFound, reason: "User not found")
+        }
+        guard user.activated == false else { throw Abort(.badRequest, reason: "Already activated") }
+        let jwt = try await user.generateJWT(req, subject: UserJWT.Subject.activation)
+        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "\(siteName) Registration", contentType: .html, text: try Message(placeHolders: [jwt, jwt], template: Template.accountActivation, removeHTML: false).string)
+        let _ = req.application.sendMail(mail)
+    }
+    
     func boot(routes: any Vapor.RoutesBuilder) throws {
         let auth = routes.grouped("api", "auth")
         auth.post("register", use: register)
         auth.get("activate", ":jwt", use: activate)
+        auth.post("resend-activate", use: resendActivationLink)
         auth.post("requestOTP", use: requestOTP)
         auth.grouped([User.credentialsAuthenticator()]).post("login", use: login)
         let sessionProtected = auth.grouped([User.sessionAuthenticator(), User.guardMiddleware()])
@@ -22,16 +34,28 @@ struct AuthController: RouteCollection {
         
         let user = try await input.makeUser(req: req)
         try await user.save(on: req.db)
-        let jwt = try await user.generateJWT(req, subject: UserJWT.Subject.activation)
-        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "\(siteName) Registration", contentType: .html, text: try Message(placeHolders: [jwt, jwt], template: Template.accountActivation, removeHTML: false).string)
-        let _ = req.application.sendMail(mail)
+        try await Self.sendActivationEmail(req, email: user.email)
         return Response(status: .created)
+    }
+    
+    func resendActivationLink(_ req: Request) async throws -> Response {
+        let email = try req.content.decode(String.self)
+        guard email.range(of: User.emailRegex, options: .regularExpression) != nil else {
+            throw Abort(.badRequest, reason: "Invalid email format")
+        }
+        try await Self.sendActivationEmail(req, email: email)
+        return .init()
     }
     
     @discardableResult
     func activate(_ req: Request) async throws -> Response {
-        guard let jwt = req.parameters.get("jwt") else { throw Abort(.unauthorized) }
-        let payload = try await req.jwt.verify(jwt, as: UserJWT.self)
+        guard let jwt = req.parameters.get("jwt") else { throw Abort(.badRequest) }
+        let payload: UserJWT
+        do {
+        payload = try await req.jwt.verify(jwt, as: UserJWT.self)
+        } catch {
+            throw Abort(.unauthorized, reason: "Link expired, please request a new link and use it within \(jwtValidMinutes) mins")
+        }
         guard payload.subject == UserJWT.Subject.activation else { throw Abort(.badRequest) }
         guard let idString = payload.audience.value.first, let id = UUID(uuidString: idString) else { throw Abort(.unauthorized) }
         guard let user = try await User.find(id, on: req.db) else { throw Abort(.unauthorized) }
@@ -44,10 +68,12 @@ struct AuthController: RouteCollection {
     }
     
     func login(_ req: Request) async throws -> Response {
+        // For auth header, api calls
         if let user = try? req.auth.require(User.self) {
             req.session.authenticate(user)
             return .init()
         }
+        // For content body, frontend, better error description.
         let loginInfo = try req.content.decode(User.LoginInput.self)
         guard let user = try await User.query(on: req.db).group(.or, { group in
             group.filter(\.$email == loginInfo.username)
@@ -138,10 +164,14 @@ struct AuthController: RouteCollection {
               let idString = token.payload.audience.value.first,
               let userID = UUID(uuidString: idString),
               let user = try await User.find(userID, on: req.db)
-        else { throw Abort(.badRequest) }
+        else { throw Abort(.badRequest, reason: "Can't find user for the given email address") }
         
         let keyCollection = await JWTKeyCollection().add(hmac: .init(from: user.password), digestAlgorithm: .sha256)
-        let _ = try await keyCollection.verify(jwt, as: UserJWT.self)
+        do {
+            let _ = try await keyCollection.verify(jwt, as: UserJWT.self)
+        } catch {
+            throw Abort(.unauthorized, reason: "Link expired, please request a new link and use it within \(jwtValidMinutes) mins")
+        }
         user.password = try Bcrypt.hash(content.password1)
         try await user.save(on: req.db)
         return .init(status: .accepted)
