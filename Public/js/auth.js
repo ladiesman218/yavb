@@ -9,11 +9,13 @@ const setNewPasswordModalID = 'newPasswordModal';
 const requestNewPWFormID = 'PWchange';
 // Form id for type in new passwords
 const setNewPasswordFormID = 'changePW';
+const loginModalID = 'loginModal';
 
 function handleLogin(result) {
     const response = result.response;
     if (response.ok) {
-        location.reload(true);
+        const next = response.headers.get("referer");
+        window.location.replace(next);
     } else {
         const loginForm = document.getElementById(loginFormID);
         appendAlert(loginForm, result.data.reason, 'danger');

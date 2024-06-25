@@ -3,7 +3,10 @@ import Vapor
 
 struct FEManageController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let protectedRoute = routes.grouped("manage").grouped(User.sessionAuthenticator(), User.redirectMiddleware(path: "/auth/login"), User.guardMiddleware())
+        let redirectMiddleware = User.redirectMiddleware { req -> String in
+            return "/?login=1&next=\(req.url.path)"
+        }
+        let protectedRoute = routes.grouped("manage").grouped(User.sessionAuthenticator(), redirectMiddleware, User.guardMiddleware())
         protectedRoute.get(use: manageHome)
     }
     

@@ -90,7 +90,7 @@
             </div>
             <div class="line-border">with</div>
             <div class="container modal-body text-center">
-                <form class="needs-validation" novalidate action="/api/auth/login" method="post" id="login">
+                <form class="needs-validation" novalidate action="/auth/login" method="post" id="login">
                     <div class="mb-3 input-group has-validation">
                         <span class="input-group-text bg-body">
                             <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
