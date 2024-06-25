@@ -23,8 +23,10 @@ final class ProtectedTagController: RouteCollection {
     }
     
     func updateTag(_ req: Request) async throws -> Response {
-        guard let oldValue = req.parameters.get("old") else { throw Abort(.notFound) }
-        guard let newValue = req.parameters.get("new"), !newValue.trimmingCharacters(in: .whitespaces).isEmpty else { throw Abort(.badRequest) }
+        guard let oldValue = req.parameters.get("old"),
+              let newValue = req.parameters.get("new"),
+              !newValue.trimmingCharacters(in: .whitespaces).isEmpty
+        else { throw Abort(.badRequest) }
         
         let existingTags = try await Tag.query(on: req.db).all()
         let (otherTags, trueElements) = existingTags.partitioned { $0.name == oldValue }

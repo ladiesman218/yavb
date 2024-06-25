@@ -41,7 +41,7 @@ struct ProtectedBlogController: RouteCollection {
     }
     
     func remove(_ req: Request) async throws -> HTTPStatus {
-        guard let string = req.parameters.get("id"), let id = UUID(uuidString: string) else {
+        guard let id = req.parameters.get("id", as: BlogPost.IDValue.self) else {
             throw Abort(.badRequest)
         }
         
@@ -52,8 +52,7 @@ struct ProtectedBlogController: RouteCollection {
     
     func update(_ req: Request) async throws -> HTTPStatus {
         guard let input = try? req.content.decode(BlogPost.UpdateInput.self),
-              let idString = req.parameters.get("id"), let id = BlogPost.IDValue(uuidString: idString)
-        else {
+              let id = req.parameters.get("id", as: BlogPost.IDValue.self) else {
             throw Abort(.badRequest)
         }
         guard let post = try await BlogPost.find(id, on: req.db) else { throw Abort(.notFound) }
