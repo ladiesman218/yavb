@@ -37,7 +37,7 @@ public func configure(_ app: Application) async throws {
     
     // Config middlewares
     app.middleware = .init()    // Avoid use default middlewares, currently they are Vapor.RouteLoggingMiddleware, Vapor.ErrorMiddleware
-    app.middleware.use(MyRouteLoggingMiddleware(logLevel: app.environment == .production ? .info : .warning))
+    app.middleware.use(MyRouteLoggingMiddleware(logLevel: app.environment == .production ? .warning : .info))
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     app.middleware.use(app.sessions.middleware)
     // Cusomized middleware to check if the session cookie has expired. If yes, removes record from db and frontend.

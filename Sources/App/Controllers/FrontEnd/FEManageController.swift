@@ -12,7 +12,8 @@ struct FEManageController: RouteCollection {
     
     func manageHome(_ req: Request) async throws -> Response {
         let _ = try req.auth.require(User.self)
-        
-        return try await req.view.render("/Manage/main", ["sitename": "YAVB"]).encodeResponse(for: req)
+        let posts = try await ProtectedBlogController().getByUpdateTime(req)
+        let context = ManageContext(posts: posts)
+        return try await req.render("/Manage/main", context).encodeResponse(for: req)
     }
 }

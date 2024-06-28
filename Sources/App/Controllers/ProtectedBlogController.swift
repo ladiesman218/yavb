@@ -36,8 +36,9 @@ struct ProtectedBlogController: RouteCollection {
         return .created
     }
     
-    func getByUpdateTime(_ req: Request) async throws -> Response {
-        return try await BlogPost.query(on: req.db).sort(\.$updatedAt).with(\.$tags).paginate(for: req).encodeResponse(for: req)
+    func getByUpdateTime(_ req: Request) async throws -> [BlogPost.DTO] {
+        let posts = try await BlogPost.query(on: req.db).sort(\.$updatedAt).with(\.$author).with(\.$tags).paginate(for: req).map { try $0.dto }
+        return posts.items
     }
     
     func remove(_ req: Request) async throws -> HTTPStatus {

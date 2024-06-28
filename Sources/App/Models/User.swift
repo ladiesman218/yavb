@@ -101,7 +101,7 @@ extension User {
     
     func generateJWT(_ req: Request, subject: UserJWT.Subject) async throws -> String {
         let id = try self.requireID()
-        let payload = UserJWT(subject: subject, audience: .init(stringLiteral: id.uuidString))
+        let payload = UserJWT(subject: subject, expiration: .init(value: jwtExpiration), audience: .init(stringLiteral: id.uuidString))
         let jwt: String
         if subject == .changePW {
             let keyCollection = await JWTKeyCollection().add(hmac: .init(from: self.password), digestAlgorithm: .sha256)

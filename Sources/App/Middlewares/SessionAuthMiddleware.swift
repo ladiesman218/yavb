@@ -11,7 +11,19 @@ struct SessionAuthMiddleware: AsyncMiddleware {
                 request.session.destroy()
             }
         }
-        
+//        if request.method == .POST, let string = request.headers["Referer"].first,
+//           let url = URL(string: string),
+//           let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+//           let queryItems = components.queryItems,
+//           let nextItem = queryItems.first(where: { $0.name == "next" }),
+//           let nextValue = nextItem.value
+//        {
+//            let response = try await next.respond(to: request)
+//            if response.status.code >= 200 && response.status.code < 300 {
+//                // Pass the request's referer to response
+//                response.headers.replaceOrAdd(name: .referer, value: nextValue)
+//            }
+//        }
         return try await next.respond(to: request)
     }
 }

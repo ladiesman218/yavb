@@ -1,8 +1,9 @@
 #extend("/Manage/footer"):
 #export("main"):
 
-<main class="bg-warning container-xxl bd-gutter mt-3 my-md-4 bd-layout">
-asdf
+<main class="bg-body-secondary container-xxl bd-gutter mt-3 my-md-4 bd-layout">
+            #dumpContext
+
 </main>
 #endexport
 #endextend

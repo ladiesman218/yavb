@@ -13,7 +13,7 @@ struct UserJWT: JWTPayload {
     }
     
     let subject: Subject
-    let expiration: ExpirationClaim = .init(value: jwtExpiration)
+    let expiration: ExpirationClaim
     let audience: AudienceClaim
     
     func verify(using algorithm: some JWTKit.JWTAlgorithm) async throws {

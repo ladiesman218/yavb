@@ -34,14 +34,14 @@
         <form class="col-6 col-lg-auto me-2" role="search">
             <input type="search" class="form-control form-control-dark text-bg-secondary" placeholder="Search..." aria-label="Search">
         </form>
-        #if(userDTO == nil):
+        #if(loggedInUser == nil):
         <div id="authButtons" class="text-end">
             <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal"> Login </button>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Sign-up</button>
         </div>
         #else:
         <div id="manageLink" class="text-end">
-            <a class="btn" href="/manage">#(userDTO.username)</a>
+            <a class="btn" href="/manage">#(loggedInUser.username)</a>
         </div>
         #endif
         <div>

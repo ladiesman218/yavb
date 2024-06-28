@@ -3,7 +3,7 @@ import Fluent
 
 struct PublicBlogController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
-        let blogRoute = routes.grouped("blog")
+        let blogRoute = routes.grouped("api", "blog")
         blogRoute.get(use: getRecent)
     }
     
@@ -15,5 +15,15 @@ struct PublicBlogController: RouteCollection {
         let dtos = try posts.items.map { try $0.dto }
         
         return dtos
+    }
+    
+    func getPost(_ req: Request) async throws -> BlogPost.DTO {
+        guard let id = req.parameters.get("id", as: BlogPost.IDValue.self) else {
+            throw Abort(.badRequest)
+        }
+        guard let post = try await BlogPost.query(on: req.db).filter(\.$id == id).with(\.$author).with(\.$tags).first() else {
+            throw Abort(.notFound)
+        }
+        return try post.dto
     }
 }

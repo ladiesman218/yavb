@@ -52,7 +52,7 @@ struct AuthController: RouteCollection {
         guard let jwt = req.parameters.get("jwt") else { throw Abort(.badRequest) }
         let payload: UserJWT
         do {
-        payload = try await req.jwt.verify(jwt, as: UserJWT.self)
+            payload = try await req.jwt.verify(jwt, as: UserJWT.self)
         } catch {
             throw Abort(.unauthorized, reason: "Link expired, please request a new link and use it within \(jwtValidMinutes) mins")
         }
@@ -69,10 +69,13 @@ struct AuthController: RouteCollection {
     
     func login(_ req: Request) async throws -> Response {
         // For auth header, api calls
-        if let user = try? req.auth.require(User.self) {
+        if req.headers.basicAuthorization != nil {
+            let user = try req.auth.require(User.self)
+            req.auth.login(user)
             req.session.authenticate(user)
             return .init()
         }
+        
         // For content body, frontend, better error description.
         let loginInfo = try req.content.decode(User.LoginInput.self)
         guard let user = try await User.query(on: req.db).group(.or, { group in
@@ -158,7 +161,7 @@ struct AuthController: RouteCollection {
         // changePW token is signed by user's password(before changing) in order to guarantee the token's one-time-use nature. So verify the jwt using app's default key will fail. Before verifying, we need to convert the parameter string to a jwt token, extract user id and get the old password first.
         guard let jwt = req.parameters.get("jwt"),
               // the DefaultJWTParser().parse() function needs a DataProtocol as paramter, so make sure the string can be converted to data first.
-                let data = jwt.data(using: .utf8),
+              let data = jwt.data(using: .utf8),
               let token = try? DefaultJWTParser().parse(data, as: UserJWT.self),
               token.payload.subject == UserJWT.Subject.changePW,
               let idString = token.payload.audience.value.first,

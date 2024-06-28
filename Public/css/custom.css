@@ -40,8 +40,9 @@
     top: 2rem;
     left: 0;
     height: 100%;
-    width: 250px; /* Width of sidebar */
-    background-color: #343a40; /* Sidebar background color */
-    color: #fff; /* Text color */
-    padding-top: 20px; /* Padding at top */
+    width: 250px;
+    background-color: #343a40;
+    color: #fff;
+    padding-top: 20px;
 }
+

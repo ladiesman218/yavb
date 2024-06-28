@@ -2,7 +2,7 @@
 #export("main"):
 <main class="p-3 container d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
     <ol class="list-unstyled">
-        #for(post in posts):
+        #for(post in pageData.posts):
         <li class="bg-body-secondary rounded-4 my-3">
             <!--Title and update time-->
             <div class="d-flex justify-content-between p-3 pb-0">
