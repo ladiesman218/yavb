@@ -19,7 +19,7 @@
                 #endfor
             </ul>
             
-            <div class="p-3">#(post.content)</div>
+            <div class="p-3">#unsafeHTML(post.content)</div>
         </li>
         #endfor
         <li>#dumpContext</li>

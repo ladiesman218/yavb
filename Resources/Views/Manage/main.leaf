@@ -1,9 +1,58 @@
 #extend("/Manage/footer"):
 #export("main"):
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-<div class="flex-column col bg-secondary">
-    content
-</div>
+
+#for(item in pageData.posts):
+<label class="h3">
+    #if(item):
+    Edit Post
+    #else:
+    Add New Post
+    #endif
+</label>
+
+<form class="d-flex flex-column flex-grow-1" action="/api/blog/update/#(item.id)" method="post">
+    <div class="d-flex mb-3">
+        <input type="text" class="form-control form-control-lg" name="title" value="#(item.title)">
+    </div>
+    
+    <div class="d-flex mb-3">
+        <input type="text" class="form-control" name="excerpt" value="#(item.excerpt)" spellcheck="true" maxlength="300">
+    </div>
+    
+<!--    <div class="d-flex mb-3">-->
+<!--        <input type="text" class="form-control" name="tags" value="#(item.tags)">-->
+<!--    </div>-->
+    
+    <div class="d-flex align-items-center mb-3">
+        <strong><label for="isPublished" class="lead me-3 fw-bold">Status: </label></strong>
+        <select id="isPublished" class="form-select form-select-lg">
+            <option value="false" #if(!item.isPublished): selected #endif>Draft</option>
+            <option value="true" #if(item.isPublished): selected #endif>Published</option>
+        </select>
+    </div>
+    
+    <div class="d-flex flex-column flex-grow-1">
+        <textarea id="content" name="content" class="flex-row flex-grow-1" >#(item.content)</textarea>
+    </div>
+    <div class="d-md-block text-end d-flex flex-column mt-2">
+        <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+</form>
+
+<script src="/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+    tinymce.init({
+        selector: 'textarea#content',
+        resize: false,
+        promotion: false,
+        branding: false,
+        license_key: 'gpl'
+    });
+</script>
+
+#endfor
+
+
 #endexport
 #endextend

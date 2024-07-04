@@ -56,6 +56,7 @@ HTMLFormElement.prototype.handleSubmit = function() {
     });
 };
 
+#warning("replace with callbacks then get rid of this function")
 // Dispatch response to functions base on form's id
 function handle(form, result) {
     switch(form.id) {

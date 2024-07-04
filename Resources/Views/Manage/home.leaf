@@ -22,17 +22,19 @@
         </svg>
         
         <div class="container-fluid h-100 d-flex flex-column">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center bg-dark text-bg-dark">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-label="Toggle navigation">
                     <svg class="svg-container"><use href="#list"></use></svg>
                 </button>
                 YAVB Project Place Holder
-                <svg class="svg-container ms-2"><use href="#house-door-fill"></use></svg>
-                #(shortName)
+                <a href="/" target="_blank" class="btn d-flex align-items-center">
+                    <svg class="svg-container ms-2"><use href="#house-door-fill"></use></svg>
+                    #(shortName)
+                </a>
             </div>
             
             <div class="d-flex flex-row flex-grow-1">
-                <aside id="navbar" class="d-md-flex bg-primary collapse flex-column" style="width: 250px">
+                <aside id="navbar" class="d-md-flex bg-dark collapse flex-column" style="width: 250px">
                     #for(item in pageData.sideBar.items):
                     <div class="btn-group dropend pe-0 d-block m-0 w-100">
                         <button type="button" class="btn btn-dark rounded-0 w-100 text-start" data-bs-toggle="dropdown" aria-expanded="false">
@@ -49,4 +51,6 @@
                     </div>
                     #endfor
                 </aside>
-        #import("footer")
+                
+                <main class="d-flex flex-column col bg-secondary">
+                    #import("footer")
