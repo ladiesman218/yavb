@@ -1,9 +1,9 @@
 #extend("/Manage/footer"):
 #export("main"):
-
-<main class="bg-body-secondary container-xxl bd-gutter mt-3 my-md-4 bd-layout">
-            #dumpContext
-
-</main>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<div class="flex-column col bg-secondary">
+    content
+</div>
 #endexport
 #endextend

@@ -16,32 +16,37 @@
             <symbol id="substack" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/>
             </symbol>
+            <symbol id="list" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+            </symbol>
         </svg>
         
-        
-        <div class="d-flex align-items-center my-2 small">
-            YAVB Project Place Holder
-            <svg class="svg-container ms-2"><use href="#house-door-fill"></use></svg>
-            #(shortName)
-        </div>
-        
-        <aside class="sidebar bg-info offcanvas-md align-items-start">
-            #for(item in pageData.sideBar.items):
-            <div class="btn-group dropend pe-0 d-block m-0">
-                <button type="button" class="btn btn-dark rounded-0 w-100 text-start" data-bs-toggle="dropdown" aria-expanded="false">
-                    #if(item.icon != nil):
-                    <svg class="me-0 svg-container align-items-center"><use href="##(item.icon)"></use></svg>
-                    #endif
-                    #(item.name)
+        <div class="container-fluid h-100 d-flex flex-column">
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-label="Toggle navigation">
+                    <svg class="svg-container"><use href="#list"></use></svg>
                 </button>
-                <ul class="dropdown-menu">
-                    #for(sub in item.subItems):
-                    <li class="btn btn-dark rounded-0 w-100 text-start">#(sub.name)</li>
-                    #endfor
-                </ul>
+                YAVB Project Place Holder
+                <svg class="svg-container ms-2"><use href="#house-door-fill"></use></svg>
+                #(shortName)
             </div>
-            #endfor
             
-        </aside>
-        
+            <div class="d-flex flex-row flex-grow-1">
+                <aside id="navbar" class="d-md-flex bg-primary collapse flex-column" style="width: 250px">
+                    #for(item in pageData.sideBar.items):
+                    <div class="btn-group dropend pe-0 d-block m-0 w-100">
+                        <button type="button" class="btn btn-dark rounded-0 w-100 text-start" data-bs-toggle="dropdown" aria-expanded="false">
+                            #if(item.icon != nil):
+                            <svg class="me-0 svg-container align-items-center"><use href="##(item.icon)"></use></svg>
+                            #endif
+                            #(item.name)
+                        </button>
+                        <ul class="dropdown-menu">
+                            #for(sub in item.subItems):
+                            <li class="btn btn-dark rounded-0 w-100 text-start">#(sub.name)</li>
+                            #endfor
+                        </ul>
+                    </div>
+                    #endfor
+                </aside>
         #import("footer")
