@@ -1,5 +1,7 @@
 'use strict';
 
+const alertID = 'alertDiv';
+
 // Customized async function to make a request, will return response, data(json) and error.
 async function makeRequest(endPoint, method, encodeType, body) {
     let result = {response: null, data: null, error: null};
@@ -32,48 +34,10 @@ HTMLButtonElement.prototype.addSpinner = function() {
     this.disabled = true;
 };
 
-// Forms can opt in by calling handleSubmit() method to prevent default submit behavior(dismiss the modal if the form is within one). This also adds a spinner into the submit button after request is submitted for processing, and removes it when it's done.
-HTMLFormElement.prototype.handleSubmit = function() {
-    this.addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent the default form submission to close the modal
-        
-        // Get the submit button and add a spinner in it
-        const button = this.querySelector('button[type="submit"]');
-        button.addSpinner();
-        
-        let result = null;
-        try {
-            result = await makeRequest(this.action, 'POST', button.formEnctype, new URLSearchParams(new FormData(this)));
-        } catch (error) {
-            console.log(error);
-        } finally {
-            // Enable the submit button and delete the spinner
-            button.disabled = false;
-            button.querySelector('.spinner-border').remove();
-            // callback method to handle result. Consider the handle method a job dispatcher.
-            handle(this, result);
-        }
-    });
-};
-
-#warning("replace with callbacks then get rid of this function")
-// Dispatch response to functions base on form's id
-function handle(form, result) {
-    switch(form.id) {
-        case loginFormID:
-            handleLogin(result);
-            break;
-        case registerFormID:
-            handleRegister(result);
-            break;
-        case requestNewPWFormID:
-            handleRequestPWChange(result);
-            break;
-        case setNewPasswordFormID:
-            handleChangePW(result);
-            break;
-        default:
-            break;
+// Multiple alertID may exist at the same time due to all modal's code are loaded. Only remove the one from the given parent element otherwise it may remove the wrong one.
+function closeAlertIn(parent) {
+    if (parent.querySelector('#' + alertID)) {
+        parent.querySelector('#' + alertID).remove();
     }
 }
 
@@ -111,20 +75,11 @@ const appendAlert = (parent, message, type) => {
     parent.insertBefore(wrapper, parent.firstChild);
 }
 
-// Multiple alertID may exist at the same time due to all modal's code are loaded. Only remove the one from the given parent element otherwise it may remove the wrong one.
-function closeAlertIn(parent) {
-    if (parent.querySelector('#' + alertID)) {
-        parent.querySelector('#' + alertID).remove();
-    }
-}
-
 // Validate form fields when each input changes, toggle appearences and submit buttons on/off status accordingly.
 function addFormValidation() {
     const forms = document.querySelectorAll('form.needs-validation');
     
     forms.forEach(function(form) {
-        form.handleSubmit();
-        
         // Disable button to gray it out and prevent being clicked.
         const button = form.querySelector('button[type="submit"]');
         button.disabled = true;
@@ -159,6 +114,39 @@ function addFormValidation() {
     });
 }
 
+function submitForm() {
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent the default form submission
+            
+            // Get the submit button and add a spinner in it
+            const button = form.querySelector('button[type="submit"]');
+            button.addSpinner();
+            
+            let result = null;
+            try {
+                result = await makeRequest(form.action, form.method, form.enctype, new URLSearchParams(new FormData(form)));
+                
+                const callbackName = form.getAttribute('data-callback');
+                if (typeof window[callbackName] === 'function') {
+                    window[callbackName](form, result);
+                } else {
+                    return result;
+                }
+            } catch (error) {
+                appendAlert(form, 'Service unavailable, please try again later', 'warning');
+                console.log(error)
+            } finally {
+                // Enable the submit button and delete the spinner
+                button.disabled = false;
+                button.querySelector('.spinner-border').remove();
+            }
+        });
+    });
+}
+
 // Convert unix time to local date, eliminate time part(HH:MM:SS)
 function unixToLocal() {
     const timeElements = document.querySelectorAll(".unixTime");
@@ -174,7 +162,7 @@ function unixToLocal() {
 }
 
 function popLoginModal(expired = false) {
-    const element = document.querySelector('#loginModal');
+    const element = document.querySelector('#' + loginModalID);
     const loginModal = new bootstrap.Modal(element);
     if (expired == true) {
         const form = element.querySelector("#" + loginFormID);

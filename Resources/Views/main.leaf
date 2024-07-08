@@ -22,7 +22,7 @@
             <div class="p-3">#unsafeHTML(post.content)</div>
         </li>
         #endfor
-        <li>#dumpContext</li>
+<!--        <li>#dumpContext</li>-->
     </ol>
 </main>
 #endexport

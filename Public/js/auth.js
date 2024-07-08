@@ -1,47 +1,71 @@
 'use strict';
 
-const alertID = 'alertDiv';
 const registerFormID = 'register';
 const loginFormID = 'login';
+// Form id for type in new passwords, used in checkPasswordsMatch() function.
+const setNewPasswordFormID = 'changePW';
 // Modal id for request new password, used in FrontendAuthController to allow js script to open the modal programmatically, also in handleChangePW() to remove modal's data-bs-backdrop attribute so users can close the modal when a new password has been updated successfully.
 const setNewPasswordModalID = 'newPasswordModal';
-// Form id for request new password, used to handle response.
-const requestNewPWFormID = 'PWchange';
-// Form id for type in new passwords
-const setNewPasswordFormID = 'changePW';
+// Used to pop loginModal programatically.
 const loginModalID = 'loginModal';
 
-function handleLogin(result) {
+function handleLogin(form, result) {
     const response = result.response;
     if (response.ok) {
-        const next = response.headers.get("referer");
-        window.location.replace(next);
+        const params = new URLSearchParams(document.location.search);
+        const next = params.get("next");
+        if (next) {
+            document.location.replace(next);
+        } else {
+            document.location.reload();
+        }
     } else {
-        const loginForm = document.getElementById(loginFormID);
-        appendAlert(loginForm, result.data.reason, 'danger');
+        appendAlert(form, result.data.reason, 'danger');
     }
 }
 
-function handleRegister(result) {
+function handleRegister(form, result) {
     const response = result.response;
-    const registerForm = document.getElementById(registerFormID);
     
     if (response.ok) {
         appendAlert(
-                    registerForm,
+                    form,
                     "An email with account activation link has been sent to you. Follow directions there.",
                     "success"
                     );
     } else {
         const json = result.data;
-        appendAlert(registerForm, json.reason, 'danger');
+        appendAlert(form, json.reason, 'danger');
+    }
+}
+
+async function requestActivation(email) {
+    let params = new URLSearchParams();
+    params.append('email', email);
+    const blogList = document.querySelectorAll('.list-unstyled')[0];
+    const button = document.querySelector('#resendActivation');
+    button.addSpinner();
+    const result = await makeRequest('/api/auth/resend-activate', 'post', 'application/x-www-form-urlencoded', params);
+    try {
+        const response = result.response;
+        if (response.ok) {
+            appendAlert(blogList, `Activation link sent, make sure to use it within 5 minutes`, 'success');
+        } else {
+            appendAlert(blogList, `Unable to sent email, please try again`, 'danger');
+        }
+    } catch (error) {
+        appendAlert(blogList, 'Service unavailable, please try again later', 'warning');
+        console.log(error)
+    } finally {
+        // Enable the submit button and delete the spinner
+        button.disabled = false;
+        button.querySelector('.spinner-border').remove();
     }
 }
 
 // Request a reset email
-function handleRequestPWChange(result) {
+function handleRequestPWChange(form, result) {
     const response = result.response;
-    const form = document.getElementById(requestNewPWFormID);
     
     if (response.ok) {
         appendAlert(
@@ -60,9 +84,8 @@ function handleRequestPWChange(result) {
 }
 
 // Update new password
-function handleChangePW(result) {
+function handleChangePW(form, result) {
     const response = result.response;
-    const form = document.getElementById(setNewPasswordFormID);
     
     if (response.ok) {
         appendAlert(

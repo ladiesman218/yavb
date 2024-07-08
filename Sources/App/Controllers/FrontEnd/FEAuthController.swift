@@ -1,16 +1,46 @@
 import Vapor
+import JWTKit
 
 struct FrontendAuthController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let auth = routes.grouped("auth")
         auth.get("activate", ":jwt", use: activate)
         auth.get("changePW", ":jwt", use: changePW)
-        auth.post("login", use: login)
     }
     
     func activate(_ req: Request) async throws -> Response {
-        try await AuthController().activate(req)
-        return req.redirect(to: "/")
+        var js = "const blogList = document.querySelectorAll('.list-unstyled')[0];"
+        do {
+            try await AuthController().activate(req)
+            let message = "Activation success. You have been logged in automatically."
+            js += "appendAlert(blogList, '\(message)', 'success');"
+            return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
+        } catch {
+            // If error happens when verifying jwt, then check if it's expiration first.
+            if error is JWTError {
+                if let jwt = req.parameters.get("jwt"),
+                   let data = jwt.data(using: .utf8),
+                   let token = try? DefaultJWTParser().parse(data, as: UserJWT.self),
+                   token.payload.subject == UserJWT.Subject.activation,
+                   let idString = token.payload.audience.value.first,
+                   let userID = UUID(uuidString: idString),
+                   let user = try await User.find(userID, on: req.db) {
+                    let errorMessage = "Link expired. Try <button id=\\'resendActivation\\' class=\\'btn btn-warning\\' onclick=\\'requestActivation(\"\(user.email)\")\\'>request a new activation link</button> and make sure to use it in \(jwtValidMinutes) minutes"
+                    js += "appendAlert(blogList, '\(errorMessage)', 'danger');"
+                    return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
+                } else {
+                    // Here means the jwt is wrong
+                    let errorMessage = "Invalid link. Make sure you did not miss any character when copy/pasting."
+                    js += "appendAlert(blogList, '\(errorMessage)', 'danger');"
+                    return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
+                }
+                
+            }
+            // Here means it's not a jwt verifying error, then show the error message itself.
+            let errorMessage = error.localizedDescription
+            js += "appendAlert(blogList, '\(errorMessage)', 'danger');"
+            return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
+        }
     }
     
     func changePW(_ req: Request) async throws -> View {
@@ -22,28 +52,5 @@ struct FrontendAuthController: RouteCollection {
         newPWModal.show();
 """
         return try await PublicFEController.renderHome(req, js: js)
-    }
-    
-    /// Frontend needs a redirect path to decide if login success, where to go next. Here we default the redirect path to home page("/") but add the ability to modify it. By adding a "next" query item in url when making the request, like "http://localhost:8082/?next=/manage", success login will take users to the given "next" path. Adding query items do not need extra endpoints and will not cause error for exising ones, route handlers can choose to ignore them completely. But here we check if it has an "next" value. By default frontend manage controller will redirect to "/?login=1&next=\(req.url.path)" if a valid session cookie is not found in request.
-    func login(_ req: Request) async throws -> Response {
-        let _ = try await AuthController().login(req)
-        // Init a header for response
-        var headers = HTTPHeaders()
-        
-        // Get request header, see if there is a "Referer" field in it.
-        if let string = req.headers["Referer"].first,
-           let url = URL(string: string),
-           let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let queryItems = components.queryItems,
-           let nextItem = queryItems.first(where: { $0.name == "next" }),
-           let nextValue = nextItem.value
-        {
-            // Pass the request's referer to response
-            headers.replaceOrAdd(name: .referer, value: nextValue)
-        } else {
-            headers.replaceOrAdd(name: .referer, value: "/")
-        }
-           
-        return .init(status: .ok, headers: headers)
     }
 }

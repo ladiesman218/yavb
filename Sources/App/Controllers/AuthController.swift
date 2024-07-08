@@ -29,51 +29,49 @@ struct AuthController: RouteCollection {
         auth.post("changePW",":jwt", use: changePW)
     }
     
-    func register(_ req: Request) async throws -> Response {
+    func register(_ req: Request) async throws -> HTTPResponseStatus {
         let input = try req.content.decode(User.RegisterInput.self)
         
         let user = try await input.makeUser(req: req)
         try await user.save(on: req.db)
         try await Self.sendActivationEmail(req, email: user.email)
-        return Response(status: .created)
+        return .created
     }
     
-    func resendActivationLink(_ req: Request) async throws -> Response {
-        let email = try req.content.decode(String.self)
+    func resendActivationLink(_ req: Request) async throws -> HTTPResponseStatus {
+        struct Info: Codable { let email: String }
+        let email = try req.content.decode(Info.self).email
         guard email.range(of: User.emailRegex, options: .regularExpression) != nil else {
             throw Abort(.badRequest, reason: "Invalid email format")
         }
         try await Self.sendActivationEmail(req, email: email)
-        return .init()
+        return .ok
     }
     
     @discardableResult
-    func activate(_ req: Request) async throws -> Response {
-        guard let jwt = req.parameters.get("jwt") else { throw Abort(.badRequest) }
-        let payload: UserJWT
-        do {
-            payload = try await req.jwt.verify(jwt, as: UserJWT.self)
-        } catch {
-            throw Abort(.unauthorized, reason: "Link expired, please request a new link and use it within \(jwtValidMinutes) mins")
-        }
-        guard payload.subject == UserJWT.Subject.activation else { throw Abort(.badRequest) }
-        guard let idString = payload.audience.value.first, let id = UUID(uuidString: idString) else { throw Abort(.unauthorized) }
-        guard let user = try await User.find(id, on: req.db) else { throw Abort(.unauthorized) }
+    func activate(_ req: Request) async throws -> HTTPResponseStatus {
+        guard let jwt = req.parameters.get("jwt") else { throw Abort(.badRequest, reason: "Please make sure the activation link is correct.") }
+        // Throws 401 when fails.
+        let payload = try await req.jwt.verify(jwt, as: UserJWT.self)
+        
+        guard payload.subject == UserJWT.Subject.activation else { throw Abort(.forbidden) }
+        guard let idString = payload.audience.value.first, let id = UUID(uuidString: idString) else { throw Abort(.forbidden) }
+        guard let user = try await User.find(id, on: req.db) else { throw Abort(.notFound, reason: "User does not exist") }
         user.activated = true
         try await user.save(on: req.db)
         // Login the user
         req.auth.login(user)
         req.session.authenticate(user)
-        return .init()
+        return .ok
     }
     
-    func login(_ req: Request) async throws -> Response {
+    func login(_ req: Request) async throws -> HTTPResponseStatus {
         // For auth header, api calls
         if req.headers.basicAuthorization != nil {
             let user = try req.auth.require(User.self)
             req.auth.login(user)
             req.session.authenticate(user)
-            return .init()
+            return .ok
         }
         
         // For content body, frontend, better error description.
@@ -88,16 +86,16 @@ struct AuthController: RouteCollection {
             throw Abort(.unauthorized, reason: "Invalid password")
         }
         req.session.authenticate(user)
-        return .init()
+        return .ok
     }
     
-    func logout(_ req: Request) async throws -> Response {
+    func logout(_ req: Request) async throws -> HTTPResponseStatus {
         req.auth.logout(User.self)
         req.session.destroy()
-        return .init()
+        return .ok
     }
     
-    func requestOTP(_ req: Request) async throws -> Response {
+    func requestOTP(_ req: Request) async throws -> HTTPResponseStatus {
         let string = try req.content.decode(String.self)
         guard string.range(of: User.emailRegex, options: .regularExpression) != nil else {
             throw Abort(.badRequest, reason: "Invalid email format")
@@ -109,10 +107,10 @@ struct AuthController: RouteCollection {
         let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "One Time Password", contentType: .html, text: try Message(placeHolders: [otp], template: Template.otpPassword).string)
         let _ = req.application.sendMail(mail)
         
-        return .init()
+        return .ok
     }
     
-    func otpLogin(_ req: Request) async throws -> Response {
+    func otpLogin(_ req: Request) async throws -> HTTPResponseStatus {
         struct OTPInfo: Codable {
             let email: String
             let otp: String
@@ -128,10 +126,10 @@ struct AuthController: RouteCollection {
         req.auth.login(user)
         req.session.authenticate(user)
         try await foundOTP.delete(on: req.db)
-        return .init()
+        return .ok
     }
     
-    func requestPWChange(_ req: Request) async throws -> Response {
+    func requestPWChange(_ req: Request) async throws -> HTTPResponseStatus {
         struct Email: Codable {
             let email: String
         }
@@ -145,10 +143,10 @@ struct AuthController: RouteCollection {
         let jwt = try await user.generateJWT(req, subject: UserJWT.Subject.changePW)
         let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "Change Password for \(siteName)", contentType: .html, text: try Message(placeHolders: [jwt], template: Template.changePW, removeHTML: false).string)
         let _ = req.application.sendMail(mail)
-        return .init()
+        return .ok
     }
     
-    func changePW(_ req: Request) async throws -> Response {
+    func changePW(_ req: Request) async throws -> HTTPResponseStatus {
         struct ChangePWContent: Codable {
             let password1: String
         }
@@ -177,7 +175,7 @@ struct AuthController: RouteCollection {
         }
         user.password = try Bcrypt.hash(content.password1)
         try await user.save(on: req.db)
-        return .init(status: .accepted)
+        return .ok
     }
 }
 

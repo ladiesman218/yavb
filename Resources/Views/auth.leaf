@@ -22,7 +22,7 @@
             </div>
             <div class="line-border">with</div>
             <div class="container modal-body text-center">
-                <form class="needs-validation" novalidate action="/api/auth/register" method="post" id="register">
+                <form class="needs-validation" novalidate action="/api/auth/register" method="post" id="register" data-callback="handleRegister">
                     <div class="mb-3 input-group has-validation">
                         <span class="input-group-text bg-body">
                             <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                    <button type="submit" class="btn btn-primary w-100">
                         Register
                     </button>
                 </form>
@@ -90,7 +90,7 @@
             </div>
             <div class="line-border">with</div>
             <div class="container modal-body text-center">
-                <form class="needs-validation" novalidate action="/auth/login" method="post" id="login">
+                <form class="needs-validation" novalidate action="/api/auth/login" method="post" id="login" data-callback="handleLogin">
                     <div class="mb-3 input-group has-validation">
                         <span class="input-group-text bg-body">
                             <svg class="bi theme-icon svg-container"><use href="#envelope-fill"></use></svg>
@@ -109,7 +109,7 @@
                             Less than 6 characters
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                    <button type="submit" class="btn btn-primary w-100">
                         Sign In
                     </button>
                 </form>
@@ -136,7 +136,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="container modal-body">
-                <form class="needs-validation" novalidate action="/api/auth/PWchange" method="post" id="PWchange">
+                <form class="needs-validation" novalidate action="/api/auth/PWchange" method="post" data-callback="handleRequestPWChange">
                     <div class="alert alert-info small d-flex align-items-center" id="alertDiv">
                         <svg class="me-2 svg-container"><use href="#info-circle-fill"></use></svg>
                         Email with a link to reset password will be sent
@@ -151,7 +151,7 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                    <button type="submit" class="btn btn-primary w-100">
                         Send Link
                     </button>
                 </form>
@@ -176,7 +176,7 @@
                 <h5 class="container text-center modal-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New Password</h5>
             </div>
             <div class="container modal-body">
-                <form class="needs-validation" novalidate action="/api/auth/changePW/#(jwt)" method="post" id="changePW">
+                <form class="needs-validation" novalidate action="/api/auth/changePW/#(jwt)" method="post" id="changePW" data-callback="handleChangePW">
                     <div class="alert alert-info small d-flex align-items-center" id="alertDiv">
                         <svg class="me-2 svg-container"><use href="#info-circle-fill"></use></svg>
                         Type in your new password
@@ -201,7 +201,7 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100" formenctype="application/x-www-form-urlencoded">
+                    <button type="submit" class="btn btn-primary w-100">
                         Submit
                     </button>
                 </form>

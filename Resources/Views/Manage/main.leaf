@@ -10,7 +10,7 @@
     #endif
 </label>
 
-<form class="d-flex flex-column flex-grow-1" action="/api/blog/update/#(item.id)" method="post">
+<form class="d-flex flex-column flex-grow-1" action="/api/blog/update/#(item.id)" method="post" data-callback="handleUpdatePost">
     <div class="d-flex mb-3">
         <input type="text" class="form-control form-control-lg" name="title" value="#(item.title)">
     </div>
