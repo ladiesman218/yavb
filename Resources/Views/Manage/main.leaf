@@ -47,7 +47,17 @@
         resize: false,
         promotion: false,
         branding: false,
-        license_key: 'gpl'
+        license_key: 'gpl',
+        setup: function(editor) {
+            // Update textarea's value when content change. We need this cos sometimes the later event(editor's submit event, different from form's submit event) will be missed.
+            editor.on('change', function() {
+                editor.save();
+            });
+            
+            editor.on('submit', function(e) {
+                tinymce.triggerSave();
+            });
+        }
     });
 </script>
 

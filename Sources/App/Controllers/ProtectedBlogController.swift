@@ -56,7 +56,7 @@ struct ProtectedBlogController: RouteCollection {
               let id = req.parameters.get("id", as: BlogPost.IDValue.self) else {
             throw Abort(.badRequest)
         }
-        guard let post = try await BlogPost.find(id, on: req.db) else { throw Abort(.notFound) }
+        guard let post = try await BlogPost.find(id, on: req.db) else { throw Abort(.notFound, reason: "Post doesn't exist") }
         if let title = input.title { post.title = title }
         if let excerpt = input.excerpt { post.excerpt = excerpt }
         if let content = input.content { post.content = content }
