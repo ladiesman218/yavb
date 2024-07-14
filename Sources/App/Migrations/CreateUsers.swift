@@ -14,7 +14,7 @@ struct CreateUsers: AsyncMigration {
             .field(User.FieldKeys.username, .string, .required, .sql(usernameLengthConstraint)).unique(on: User.FieldKeys.username)
             .field(User.FieldKeys.password, .string, .required)
             .field(User.FieldKeys.activated, .bool, .required, .sql(defaultNotActivated))
-        
+            .field(User.FieldKeys.registerTime, .datetime, .required)
             .create()
     }
     
