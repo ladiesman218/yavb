@@ -25,8 +25,7 @@ struct FrontendAuthController: RouteCollection {
                    let idString = token.payload.audience.value.first,
                    let userID = UUID(uuidString: idString),
                    let user = try await User.find(userID, on: req.db) {
-                    let errorMessage = "Link expired. Try <button id=\\'resendActivation\\' class=\\'btn btn-warning\\' onclick=\\'requestActivation(\"\(user.email)\")\\'>request a new activation link</button> and make sure to use it in \(jwtValidMinutes) minutes"
-                    js += "appendAlert(blogList, '\(errorMessage)', 'danger');"
+                    js += "alertNotActivated('\(user.email)', blogList, 'Link expired. Please click the button to request a new link');"
                     return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
                 } else {
                     // Here means the jwt is wrong
