@@ -3,19 +3,14 @@
 const alertID = 'alertDiv';
 
 // Customized async function to make a request, will return response, data(json) and error.
-async function makeRequest(endPoint, method, encodeType, body) {
+async function makeRequest(endPoint, options = null) {
     let result = {response: null, data: null, error: null};
     try {
-        const response = await fetch(endPoint, {
-        method: method,
-        headers: { 'Content-Type': encodeType },
-        body: body,
-        withCredentials: true
-        });
+        const response = await fetch(endPoint, options);
         result.response = response;
-        // TODO: Test what if no json body is returned, will this throw an error??
         result.data = await response.json();
     } catch (error) {
+        // Server received request, but thrown or responded an error. Caller needs to handle connection error themselves, when server is un-reachable.
         result.error = error;
     } finally {
         return result;
@@ -44,7 +39,7 @@ function closeAlertIn(parent) {
 // Create an alert div and insert it as the first child in the given parent node.
 const appendAlert = (parent, message, type) => {
     closeAlertIn(parent);
-
+    
     // Allowed values for `type` parameter are: info, success, warning, danger
     let icon = null;
     switch (type) {
@@ -125,9 +120,13 @@ function submitForm() {
             const button = form.querySelector('button[type="submit"]');
             button.addSpinner();
             
+            const headers = new Headers();
+            headers.set('Content-Type', form.enctype);
+            const options = {'method': form.method, 'headers': headers, 'body': new URLSearchParams(new FormData(form))};
+            
             let result = null;
             try {
-                result = await makeRequest(form.action, form.method, form.enctype, new URLSearchParams(new FormData(form)));
+                const result = await makeRequest(form.action, options);
                 
                 const callbackName = form.getAttribute('data-callback');
                 if (typeof window[callbackName] === 'function') {
@@ -136,8 +135,8 @@ function submitForm() {
                     return result;
                 }
             } catch (error) {
+                // Server is un-reachable.
                 appendAlert(form, 'Service unavailable, please try again later', 'warning');
-                console.log(error)
             } finally {
                 // Enable the submit button and delete the spinner
                 button.disabled = false;
