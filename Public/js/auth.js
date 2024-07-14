@@ -12,12 +12,12 @@ const loginModalID = 'loginModal';
 function handleLogin(form, result) {
     const response = result.response;
     if (response.ok) {
-        const params = new URLSearchParams(document.location.search);
+        const params = new URLSearchParams(window.location.search);
         const next = params.get("next");
         if (next) {
-            document.location.replace(next);
+            window.location.replace(next);
         } else {
-            document.location.reload();
+            window.location.reload();
         }
     } else {
         appendAlert(form, result.data.reason, 'danger');
@@ -39,28 +39,45 @@ function handleRegister(form, result) {
     }
 }
 
-async function requestActivation(email) {
+// Display a button in the given parent node, which request a new activation email for the given address when clicked. Upon success/failed response, it displays the corresponding response in the same parent node.
+async function requestActivation(email, parentElement) {
     let params = new URLSearchParams();
     params.append('email', email);
-    const blogList = document.querySelectorAll('.list-unstyled')[0];
     const button = document.querySelector('#resendActivation');
     button.addSpinner();
-    const result = await makeRequest('/api/auth/resend-activate', 'post', 'application/x-www-form-urlencoded', params);
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/x-www-form-urlencoded');
+    const options = {'headers': headers, 'method': 'post', 'body': params};
+    const result = await makeRequest('/api/auth/resend-activate', options);
     try {
         const response = result.response;
         if (response.ok) {
-            appendAlert(blogList, `Activation link sent, make sure to use it within 5 minutes`, 'success');
+            appendAlert(parentElement, `Activation link sent, make sure to use it within 5 minutes`, 'success');
         } else {
-            appendAlert(blogList, `Unable to sent email, please try again`, 'danger');
+            appendAlert(parentElement, `Unable to send email, please try again later`, 'danger');
         }
     } catch (error) {
-        appendAlert(blogList, 'Service unavailable, please try again later', 'warning');
+        appendAlert(parentElement, 'Service unavailable, please try again later', 'warning');
         console.log(error)
     } finally {
         // Enable the submit button and delete the spinner
         button.disabled = false;
         button.querySelector('.spinner-border').remove();
     }
+}
+
+// Display an alert in the given parent node, with the given message. It appends a button at the end of the message automatically, which upon click will request a new activation link from server.
+function alertNotActivated(email, parentElement, message) {
+    const button = document.createElement('button');
+    button.id = 'resendActivation';
+    button.type = 'button';
+    button.classList.add('btn', 'btn-warning');
+    button.innerText = 'Resend Activation Email';
+    
+    appendAlert(parentElement, message + button.outerHTML, 'danger');
+    const btn = document.querySelector('#resendActivation');
+    btn.onclick = () => requestActivation(email, parentElement);
+
 }
 
 // Request a reset email
@@ -125,6 +142,7 @@ function handleChangePW(form, result) {
 // Validate if password2 is exact match with password1 in registration form and reset password form.
 function checkPasswordsMatch(formID) {
     const form = document.getElementById(formID);
+    if (form == null) { return }
     const password1 = form.querySelector('#password1');
     const password2 = form.querySelector('#password2');
     const submitButton = form.querySelector(['button[type="submit"]']);
