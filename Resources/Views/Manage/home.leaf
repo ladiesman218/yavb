@@ -21,7 +21,7 @@
             </symbol>
         </svg>
         
-        <div class="container-fluid h-100 d-flex flex-column">
+        <div class="container-fluid h-100 d-flex flex-column gx-0">
             <div class="d-flex align-items-center bg-dark text-bg-dark">
                 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-label="Toggle navigation">
                     <svg class="svg-container"><use href="#list"></use></svg>
@@ -43,7 +43,7 @@
                             #endif
                             #(item.name)
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu p-0">
                             #for(sub in item.subItems):
                             <li class="btn btn-dark rounded-0 w-100 text-start">#(sub.name)</li>
                             #endfor
@@ -52,5 +52,5 @@
                     #endfor
                 </aside>
                 
-                <main class="d-flex flex-column col bg-secondary">
+                <main class="d-flex flex-column col">
                     #import("footer")
