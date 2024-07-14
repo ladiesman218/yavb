@@ -16,8 +16,8 @@ struct CreateBlogPosts: AsyncMigration {
             .field(BlogPost.FieldKeys.authorID, .uuid, .required, .references(User.schema, "id", onDelete: .cascade))
             .field(BlogPost.FieldKeys.type, postType, .required, .sql(defaultType))
             .field(BlogPost.FieldKeys.isPublished, .bool, .required, .sql(defaultPublished))
-            .field(BlogPost.FieldKeys.createdAt, .datetime,.required)
-            .field(BlogPost.FieldKeys.updatedAt, .datetime)
+            .field(BlogPost.FieldKeys.createdAt, .datetime, .required)
+            .field(BlogPost.FieldKeys.updatedAt, .datetime, .required)
             .create()
     }
     
