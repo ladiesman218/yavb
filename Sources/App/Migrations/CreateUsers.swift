@@ -10,7 +10,7 @@ struct CreateUsers: AsyncMigration {
     func prepare(on database: any Database) async throws {
         
         try await database.schema(User.schema).id()
-            .field(User.FieldKeys.email, .string, .sql(emailRegexConstraint)).unique(on: User.FieldKeys.email)
+            .field(User.FieldKeys.email, .string, .required, .sql(emailRegexConstraint)).unique(on: User.FieldKeys.email)
             .field(User.FieldKeys.username, .string, .required, .sql(usernameLengthConstraint)).unique(on: User.FieldKeys.username)
             .field(User.FieldKeys.password, .string, .required)
             .field(User.FieldKeys.activated, .bool, .required, .sql(defaultNotActivated))

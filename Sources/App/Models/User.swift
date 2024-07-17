@@ -9,8 +9,10 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: FieldKeys.email) var email: String
     @Field(key: FieldKeys.password) var password: String
     @Field(key: FieldKeys.activated) var activated: Bool
+    @Timestamp(key: FieldKeys.registerTime, on: .create) var registerTime: Date?
     @Children(for: \OTP.$user) var otps: [OTP]
     @Children(for: \BlogPost.$author) var posts: [BlogPost]
+    @Children(for: \Comment.$user) var comments: [Comment]
     
     init() {}
     
@@ -29,7 +31,7 @@ extension User {
     
     static let usernameLength = 4 ... 32
     static let passwordLength = 6 ... 256
-    static let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9]+\\.?[A-Za-z0-9]+\\.[A-Za-z]{2,64}$"
+    static let emailRegex = "^[A-Z0-9a-z._%+-]+@([A-Za-z0-9]+[-.]?)*[A-Za-z0-9]+\\.[A-Za-z]{2,64}$"
     static let phoneRegex: String = "(\\+[1-9]+(-[0-9]+)* )?[0]?[1-9][0-9\\- ][0-9]*$"
     
     struct FieldKeys {
@@ -37,6 +39,7 @@ extension User {
         static let email: FieldKey = .init(stringLiteral: "email")
         static let password: FieldKey = .init(stringLiteral: "password")
         static let activated: FieldKey = .init(stringLiteral: "activated")
+        static let registerTime: FieldKey = .init(stringLiteral: "register_time")
     }
 }
 
@@ -46,11 +49,28 @@ extension User {
         let username: String
         let email: String?
         let activated: Bool
+        let registerTime: Date
     }
     var dto: DTO {
         get throws {
             let id = try requireID()
-            return .init(id: id, username: username, email: email, activated: activated)
+            guard let registerTime = registerTime else {
+                throw Abort(.internalServerError, reason: "Can not get register time for user: \(id.uuidString)")
+            }
+            return .init(id: id, username: username, email: email, activated: activated, registerTime: registerTime)
+        }
+    }
+    
+    // Less info than User.DTO
+    struct AuthorDTO: Codable {
+        let id: UUID
+        let username: String
+    }
+    
+    var authorDTO: AuthorDTO {
+        get throws {
+            let id = try requireID()
+            return .init(id: id, username: username)
         }
     }
 }
