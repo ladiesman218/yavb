@@ -9,6 +9,7 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: FieldKeys.email) var email: String
     @Field(key: FieldKeys.password) var password: String
     @Field(key: FieldKeys.activated) var activated: Bool
+    @Enum(key: FieldKeys.role) var role: Role
     @Timestamp(key: FieldKeys.registerTime, on: .create) var registerTime: Date?
     @Children(for: \OTP.$user) var otps: [OTP]
     @Children(for: \BlogPost.$author) var posts: [BlogPost]
@@ -16,13 +17,14 @@ final class User: Model, Content, @unchecked Sendable {
     
     init() {}
     
-    init(id: UUID? = nil, username: String, email: String, password: String, activated: Bool = false) throws {
+    init(id: UUID? = nil, username: String, email: String, password: String, activated: Bool = false, role: Role = .subscriber) throws {
         self.id = id
         self.username = username
         self.email = email
         let hashedPassword = try Bcrypt.hash(password)
         self.password = hashedPassword
         self.activated = activated
+        self.role = role
     }
 }
 
@@ -39,6 +41,7 @@ extension User {
         static let email: FieldKey = .init(stringLiteral: "email")
         static let password: FieldKey = .init(stringLiteral: "password")
         static let activated: FieldKey = .init(stringLiteral: "activated")
+        static let role: FieldKey = .init(stringLiteral: "role")
         static let registerTime: FieldKey = .init(stringLiteral: "register_time")
     }
 }
@@ -130,5 +133,27 @@ extension User {
             jwt = try await req.jwt.sign(payload)
         }
         return jwt
+    }
+}
+
+extension User {
+    enum Role: String, Codable {
+        case webmaster
+        case admin
+        case author
+        case subscriber
+    }
+    
+    var authorizations: UserAuthorizations {
+        switch self.role {
+            case .webmaster:
+                return UserAuthorizations.webmaster
+            case .admin:
+                return UserAuthorizations.admin
+            case .author:
+                return UserAuthorizations.author
+            case .subscriber:
+                return UserAuthorizations.subscriber
+        }
     }
 }
