@@ -8,7 +8,11 @@ async function makeRequest(endPoint, options = null) {
     try {
         const response = await fetch(endPoint, options);
         result.response = response;
-        result.data = await response.json();
+        try {
+            result.data = await response.json();
+        } catch (jsonError) {
+            result.error = new Error("Failed to parse JSON response: " + jsonError.message);
+        }
     } catch (error) {
         // Server received request, but thrown or responded an error. Caller needs to handle connection error themselves, when server is un-reachable.
         result.error = error;
