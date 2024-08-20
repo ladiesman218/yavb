@@ -16,8 +16,12 @@ struct PublicFEController: RouteCollection {
     func getRecent(_ req: Request) async throws -> View {
         var js: String? = nil
         // If query item named "login" with the value of 1 is in url, then pop the loginModal. This kinds of url should be redirected from protected routes when a session is no longer valid, so the expired = true in js will add an alert telling users why they've been taken out of protected end points.
-        if let a: Int = req.query["login"], a == 1 {
-            js = "popLoginModal(expired = true);"
+        if let a: Int = req.query["login"] {
+            if a == 1 {
+                js = "popLoginModal(expired = true);"
+            } else if a == 2 {
+                js = "popLoginModal(expired = false);"
+            }
         }
         return try await Self.renderHome(req, js: js)
     }
