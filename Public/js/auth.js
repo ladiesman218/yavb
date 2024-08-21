@@ -13,12 +13,8 @@ function handleLogin(form, result) {
     const response = result.response;
     if (response.ok) {
         const params = new URLSearchParams(window.location.search);
-        const next = params.get("next");
-        if (next) {
-            window.location.replace(next);
-        } else {
-            window.location.reload();
-        }
+        const next = params.get("next") ?? '/';
+        window.location.replace(next);
     } else {
         appendAlert(form, result.data.reason, 'danger');
     }
@@ -172,4 +168,5 @@ function checkPasswordsMatch(formID) {
 (() => {
     checkPasswordsMatch(registerFormID);
     checkPasswordsMatch(setNewPasswordFormID);
+    checkPasswordsMatch('register-webmaster');
 })();
