@@ -1,0 +1,80 @@
+#extend("/SetupGuide/index"):
+#export("main"):
+
+<div class="alert alert-warning" role="alert">
+    Development environment detected, you may choose to import dummy data.
+</div>
+<h1>Import Dummy Data</h1>
+<p>
+Generate and save dummy users, posts and comments and save them in database for develop and test purposes.
+</p>
+<h2>Users</h2>
+<p>
+Given number of total users will be randomly distributed between activated and un-activated(email address left un-verified). Only activated users can perform authorized actions.</p>
+<p>
+Users will also be randomly distributed between:</br>
+subscribers: can post comments if enabled, and edit their own comments after posting.</br>
+authors: everything subscribers can do, plus post blogposts, edit their own posts and remove its comments.
+</p>
+<p>
+All dummy users use randomly generated info(emails, passwords, etc) which makes it hard to login these accounts later.
+You may manually register accounts with legit emails, promote them as admins, login these accounts to test admin related functionalities.
+</p>
+</p>
+<h2>Posts</h2>
+<p>
+Given number of total posts will be randomly distributed between published and un-published(only published can be viewed, but you can edit and publish drafts later). All posts will be randomly distributed between activated authors only.
+</p>
+<h2>Comments</h2>
+<p>
+Given number of total comments will be randomly distributed between published and un-published. All comments will be randomly distributed between published posts only.
+</p>
+<div class="alert alert-warning" role="alert">
+    Depedening on the numbers, this process can take a while. You may use the skip button at the bottom of this page to skip this step and manually add some dummy data later.
+</div>
+
+<form class="needs-validation" novalidate action="/install/import" method="post" data-callback="handleImport">
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Number of Users</label>
+        <div class="flex-column flex-grow-1">
+            <input type="number" class="form-control" name="usersCount" value="100" min="0" max="65535" required />
+            <div class="invalid-feedback d-flex-row">
+                Between 0 - 65535
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Number of Posts</label>
+        <div class="flex-column flex-grow-1">
+            <input type="number" class="form-control" name="postsCount" value="1000" min="0" max="65535" required />
+            <div class="invalid-feedback d-flex-row">
+                Between 0 - 65535
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Number of Comments</label>
+        <div class="flex-column flex-grow-1">
+            <input type="number" class="form-control" name="commentsCount" value="3000" min="0" max="65535" required />
+            <div class="invalid-feedback d-flex-row">
+                Between 0 - 65535
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex py-3 gx-5 gy-5">
+        <a href="/install/finished" class="w-auto btn btn-outline-secondary d-block mb-3" style="min-width: 100px">Skip</a>
+        <button type="submit" class="btn btn-primary flex-grow-1 w-100 d-block mb-3" id="import">
+            Import
+        </button>
+    </div>
+</form>
+
+
+<script src="/js/import.js"></script>
+
+#endexport
+#endextend

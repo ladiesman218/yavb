@@ -1,6 +1,7 @@
 import Vapor
 
 func routes(_ app: Application) throws {
+    try app.register(collection: Install())
     try app.register(collection: AuthController())
     try app.register(collection: ProtectedBlogController())
     try app.register(collection: FrontendAuthController())

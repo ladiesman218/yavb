@@ -5,6 +5,8 @@ import Vapor
 // configures your application
 public func configure(_ app: Application) async throws {
     app.http.server.configuration.port = 8082
+    app.logger.logLevel = (app.environment == .production) ? .warning : .info
+    
     app.databases.use(DatabaseConfigurationFactory.postgres(configuration: .init(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
@@ -37,7 +39,7 @@ public func configure(_ app: Application) async throws {
     
     // Config middlewares
     app.middleware = .init()    // Avoid use default middlewares, currently they are Vapor.RouteLoggingMiddleware, Vapor.ErrorMiddleware
-    app.middleware.use(MyRouteLoggingMiddleware(logLevel: app.environment == .production ? .warning : .info))
+    app.middleware.use(MyRouteLoggingMiddleware(logLevel: app.logger.logLevel))
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     app.middleware.use(app.sessions.middleware)
     // Cusomized middleware to check if the session cookie has expired. If yes, removes record from db and frontend.
@@ -53,7 +55,6 @@ public func configure(_ app: Application) async throws {
     let cors = CORSMiddleware(configuration: corsConfiguration)
     // cors middleware should come before default error middleware using `at: .beginning`
     app.middleware.use(cors, at: .beginning)
-    
     let jwtSecret = Environment.get("JWT_SECRET") ?? "secret"
     await app.jwt.keys.add(hmac: .init(from: jwtSecret), digestAlgorithm: .sha256)
     
@@ -64,6 +65,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateBlogPosts())
     app.migrations.add(CreateTags())
     app.migrations.add(CreateBlogTagPivot())
+    app.migrations.add(CreateComments())
 //    try await app.autoRevert()
     try await app.autoMigrate()
     app.views.use(.leaf)

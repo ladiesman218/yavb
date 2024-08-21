@@ -1,0 +1,8 @@
+#extend("/SetupGuide/index"):
+#export("main"):
+<p>
+Setup finished, you can <a href="/">Go to home page</a>, or <a href="/?login=2">Login</a> to manage your site.
+</p>
+
+#endexport
+#endextend

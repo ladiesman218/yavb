@@ -1,0 +1,69 @@
+#extend("/SetupGuide/index"):
+#export("main"):
+<h2 class="border-bottom pb-3">Register Webmaster</h2>
+<p>
+A webmaster have the highest privileges to manage the website. Including:
+</p>
+<ol>
+    <li>
+        Change site&apos;s name, icon, enable/disable comments, etc.
+    </li>
+    <li>
+        Manage blogposts, comments.
+    </li>
+    <li>
+        Change other user&apos;s role, promote users as admins to help manage the site. Or even disable user registration at all to use this as a personal blog.
+    </li>
+</ol>
+
+<p>Please provide the following information. Do not worry, you can always change these settings later.</p>
+
+<form class="needs-validation" novalidate action="/install" method="post" id="register-webmaster" data-callback="handleRegisterWebmaster">
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Username</label>
+        <div class="flex-column flex-grow-1">
+            <input type="text" class="form-control" name="username" placeholder="Username, should be at least 4 letters" minlength="4" maxlength="32" required />
+            <div class="invalid-feedback d-flex-row">
+                Between 4 - 32 characters
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Your Email</label>
+        <div class="flex-column flex-grow-1">
+            <input type="email" class="form-control" name="email" placeholder="Your email address" pattern="^[A-Z0-9a-z._%+-]+@([A-Za-z0-9]+[-.]?)*[A-Za-z0-9]+\.[A-Za-z]{2,64}$" required />
+            <div class="invalid-feedback d-flex-row">
+                Invalid email address
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Password1</label>
+        <div class="flex-column flex-grow-1">
+            <input type="password" class="form-control" id="password1" name="password1" placeholder="Your password" minlength="6" maxlength="256" autocomplete="new-password" required />
+            <div class="invalid-feedback d-flex-row">
+                Invalid password
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex has-validation py-3">
+        <label class="w-auto fw-bold form-control border-0 ps-0" style="min-width: 200px">Password2</label>
+        <div class="flex-column flex-grow-1">
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Password again, must be exact same as password1" minlength="6" maxlength="256" autocomplete="new-password" required />
+            <div class="invalid-feedback d-flex-row">
+                Invalid password
+            </div>
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary w-100">
+        Install
+    </button>
+</form>
+
+#endexport
+#endextend

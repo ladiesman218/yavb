@@ -173,3 +173,13 @@ function popLoginModal(expired = false) {
     }
     loginModal.show();
 }
+
+function handleRegisterWebmaster(form, result) {
+    const response = result.response;
+    if (response.ok) {
+        window.location.replace('/install/import');
+    } else {
+        const json = result.data;
+        appendAlert(form, json.reason, 'danger');
+    }
+}
