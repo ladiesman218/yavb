@@ -1,6 +1,6 @@
 import Vapor
 
-final class MyRouteLoggingMiddleware: Middleware {
+struct MyRouteLoggingMiddleware: Middleware {
     let logLevel: Logger.Level
     
     init(logLevel: Logger.Level = .info) {
