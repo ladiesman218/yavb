@@ -1,8 +1,8 @@
 
 import Foundation
 import Vapor
-let siteName = "Yet Another Vapor Blog"
-let shortName = "YAVB"
+var siteName = "Yet Another Vapor Blog"
+var shortName = "YAVB"
 var domainName: URL {
     if try! Environment.detect() == .development {
         return .init(string: "http://localhost:8082")!
@@ -17,3 +17,8 @@ var jwtExpiration: Date {
 }
 
 let sessionCookieName = "yavb-session"
+
+var webmasterExists = false
+var allowRegistration = true
+var allowComment = true
+

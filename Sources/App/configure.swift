@@ -45,7 +45,7 @@ public func configure(_ app: Application) async throws {
     // Cusomized middleware to check if the session cookie has expired. If yes, removes record from db and frontend.
     app.middleware.use(SessionAuthMiddleware())
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    // Use sessions middleware globally, but only config to use sessionAuthenticator() on frontend routes later.
+    app.middleware.use(InstallRedirectMiddleware())
     
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
@@ -72,4 +72,6 @@ public func configure(_ app: Application) async throws {
     
     // register routes
     try routes(app)
+    
+    app.lifecycle.use(LoadSiteSettings())
 }
