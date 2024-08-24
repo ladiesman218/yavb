@@ -30,7 +30,7 @@ Given number of total posts will be randomly distributed between published and u
 Given number of total comments will be randomly distributed between published and un-published. All comments will be randomly distributed between published posts only.
 </p>
 <div class="alert alert-warning" role="alert">
-    Depedening on the numbers, this process can take a while. You may use the skip button at the bottom of this page to skip this step and manually add some dummy data later.
+    Depedening on the numbers, this process may take a while. You may use the skip button at the bottom of this page to skip this step and manually add some dummy data later.
 </div>
 
 <form class="needs-validation" novalidate action="/install/import" method="post" data-callback="handleImport">
