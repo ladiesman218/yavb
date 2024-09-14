@@ -179,20 +179,6 @@ function submitForm() {
     });
 }
 
-// Convert unix time to local time
-function unixToLocal() {
-    const timeElements = document.querySelectorAll(".unixTime");
-    timeElements.forEach(node => {
-        // Swift returns unix time with float point number(in milli-seconds), convert it to seconds by * 1000, but remove white spaces first.
-        const unixSeconds = node.textContent.trim() * 1000;
-        // Still may contain float point number(decimal part longer than 3 digits), convert it to int.
-        const int = Math.floor(unixSeconds);
-        const unixTime = new Date(int);
-        const localString = unixTime.toLocaleString();
-        node.textContent = localString;
-    });
-}
-
 function popLoginModal(expired = false) {
     const element = document.querySelector('#' + loginModalID);
     const loginModal = new bootstrap.Modal(element);

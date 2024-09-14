@@ -87,7 +87,7 @@
                 <td class="d-none d-md-table-cell">#(item.author_name)</td>
                 <td class="d-none d-md-table-cell">#(item.tags)</td>
                 <td class="d-none d-md-table-cell">#(item.comment_count)</td>
-                <td class="d-none d-md-table-cell unixTime">#(item.updated_at)</td>
+                <td class="d-none d-md-table-cell">#date(item.updated_at, "yyyy-MM-dd hh:mm")</td>
                 <td class="d-none d-md-table-cell status-selection">
                     <select id="status-options-#(item.id)" class="selection-#(item.status)">
                         <option value="published">Published</option>

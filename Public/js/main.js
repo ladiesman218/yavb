@@ -3,6 +3,5 @@
 
 (() => {
     addFormValidation();
-    unixToLocal();
     submitForm();
 })();
