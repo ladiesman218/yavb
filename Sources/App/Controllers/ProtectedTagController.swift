@@ -39,8 +39,8 @@ final class ProtectedTagController: RouteCollection {
     }
     
     static func add(tagNames: [String], database: Database) async throws {
-        // Filter out the ones that's not purely spaces/tabs, etc, those input will simply be ignored.
-        let validNames = tagNames.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        // Remove all empty spaces from input, filter out the ones that's purely spaces/tabs, etc, those input will simply be ignored.
+        let validNames = tagNames.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
         guard !validNames.isEmpty else { return }
         
         // Query all tags, convert the names to strings and store them in an array.
@@ -71,8 +71,5 @@ final class ProtectedTagController: RouteCollection {
             return false
         }
         return true
-    }
-    static func getTags(_ names: [String], req: Request) async throws -> [Tag] {
-        return []
     }
 }

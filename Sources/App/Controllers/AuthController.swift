@@ -149,9 +149,13 @@ struct AuthController: RouteCollection {
     func changePW(_ req: Request) async throws -> HTTPResponseStatus {
         struct ChangePWContent: Codable {
             let password1: String
+            let password2: String
         }
         
         let content = try req.content.decode(ChangePWContent.self)
+        guard content.password1 == content.password2 else {
+            throw Abort(.badRequest, reason: "Passwords don't match")
+        }
         guard User.passwordLength.contains(content.password1.count) else {
             throw Abort(.badRequest, reason: "Password must be at least \(User.passwordLength.lowerBound) characters and \(User.passwordLength.upperBound) at most.")
         }

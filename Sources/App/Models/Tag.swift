@@ -20,8 +20,3 @@ extension Tag {
         static let name: FieldKey = .init(stringLiteral: "name")
     }
 }
-//extension Tag: Equatable {
-//    static func ==(lhs: Tag, rhs: Tag) -> Bool {
-//        return lhs.name == rhs.name
-//    }
-//}
