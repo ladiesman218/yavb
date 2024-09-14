@@ -15,7 +15,7 @@ public func configure(_ app: Application) async throws {
         database: Environment.get("DATABASE_NAME")!,
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
-    app.fluent.pagination.pageSizeLimit = 50
+    app.fluent.pagination.pageSizeLimit = 20
     // The session driver should be configured before adding app.sessions.middleware to your application.
     app.sessions.configuration = .init(cookieName: sessionCookieName, cookieFactory: { sessionID in
 #warning("TODO: add queue job to delete session by id when after one month of its creation")

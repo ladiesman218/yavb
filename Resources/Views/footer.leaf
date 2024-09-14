@@ -9,8 +9,8 @@
 <script src="/js/definitions.js"></script>
 <script src="/js/main.js"></script>
 <script>
-    #if(script):
-        #unsafeHTML(script)
+    #if(js):
+        #unsafeHTML(js)
     #endif
 </script>
 </body>

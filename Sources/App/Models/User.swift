@@ -53,6 +53,7 @@ extension User {
         let email: String?
         let activated: Bool
         let registerTime: Date
+        let role: Role
     }
     var dto: DTO {
         get throws {
@@ -60,7 +61,7 @@ extension User {
             guard let registerTime = registerTime else {
                 throw Abort(.internalServerError, reason: "Can not get register time for user: \(id.uuidString)")
             }
-            return .init(id: id, username: username, email: email, activated: activated, registerTime: registerTime)
+            return .init(id: id, username: username, email: email, activated: activated, registerTime: registerTime, role: role)
         }
     }
     
@@ -137,23 +138,24 @@ extension User {
 }
 
 extension User {
-    enum Role: String, Codable {
+    enum Role: String, Codable, CaseIterable {
         case webmaster
         case admin
         case author
         case subscriber
-    }
-    
-    var authorizations: UserAuthorizations {
-        switch self.role {
-            case .webmaster:
-                return UserAuthorizations.webmaster
-            case .admin:
-                return UserAuthorizations.admin
-            case .author:
-                return UserAuthorizations.author
-            case .subscriber:
-                return UserAuthorizations.subscriber
+        var authorizations: UserAuthorizations {
+            switch self {
+                case .webmaster:
+                    return UserAuthorizations.webmaster
+                case .admin:
+                    return UserAuthorizations.admin
+                case .author:
+                    return UserAuthorizations.author
+                case .subscriber:
+                    return UserAuthorizations.subscriber
+            }
         }
     }
+    
+    
 }

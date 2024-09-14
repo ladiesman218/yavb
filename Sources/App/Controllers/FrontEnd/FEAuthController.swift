@@ -33,7 +33,6 @@ struct FrontendAuthController: RouteCollection {
                     js += "appendAlert(blogList, '\(errorMessage)', 'danger');"
                     return try await PublicFEController.renderHome(req, js: js).encodeResponse(for: req)
                 }
-                
             }
             // Here means it's not a jwt verifying error, then show the error message itself.
             let errorMessage = error.localizedDescription

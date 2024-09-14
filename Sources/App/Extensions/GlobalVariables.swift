@@ -21,4 +21,7 @@ let sessionCookieName = "yavb-session"
 var webmasterExists = false
 var allowRegistration = true
 var allowComment = true
+var commentNeedReview = true
+var allowGuestPost = true
+var postsNeedReview = false
 

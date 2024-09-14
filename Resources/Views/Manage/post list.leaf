@@ -1,8 +1,136 @@
-//
-//  File.swift
-//  
-//
-//  Created by Lei Gao on 2024/7/9.
-//
+#extend("/Manage/footer"):
+#export("main"):
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="bi-caret-down-fill" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+    </symbol>
+    
+    <symbol id="bi-caret-up-fill" viewBox="0 0 16 16" fill="currentColor">
+        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+    </symbol>
+    <symbol id="bi-arrow-down-up" viewBox="0 0 16 16" fill="currentColor">
+        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"/>
+    </symbol>
+</svg>
 
-import Foundation
+<div class="d-flex flex-column flex-grow-1 m-4" id="postsTable">
+    <div class="d-flex align-items-center mb-4">
+        <h1 class="fs-2 me-3">Posts</h1>
+        <span>
+            <a class="btn btn-sm border-primary text-primary rounded-1 lh-sm px-2" href='/manage/post'>Add New Post</a>
+        </span>
+    </div>
+    
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link status-tab active" id="all" aria-selected="false">All (#(pageData.statusPostsCount.published + pageData.statusPostsCount.draft + pageData.statusPostsCount.pendingReview + pageData.statusPostsCount.rejected))</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link status-tab" id="published" aria-selected="false">Published (#(pageData.statusPostsCount.published))</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link status-tab" id="draft" aria-selected="false">Drafts (#(pageData.statusPostsCount.draft))</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link status-tab" id="pending_review" aria-selected="false">Pending Review (#(pageData.statusPostsCount.pendingReview))</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link status-tab" id="rejected" aria-selected="false">Rejected (#(pageData.statusPostsCount.rejected))</button>
+        </li>
+    </ul>
+    
+    <div class="my-3 d-flex flex-md-row flex-column">
+        <label class="fw-bolder me-2 my-1">Filter Posts By: </label>
+        <input type="text" id="author_name" name="author_name" class="border-secondary my-1 me-md-2 flex-fill" minlength="4" maxlength="64" placeholder="Author's name" />
+        <div class="d-flex flex-fill flex-wrap align-items-center mb-md-0 mb-2">
+            <div class="d-flex flex-wrap gap-1" id="tags-container"></div>
+            <input type="text" id="tag-input" name="tag" class="border-secondary y-1 me-md-2 flex-fill" minlength="4" maxlength="80" placeholder="Tags, separate mutiple tags by spaces" />
+        </div>
+        <button id="filter-button" class="btn btn-primary btn-sm m-md-1">Apply Filters</button>
+    </div>
+    
+    <div class="my-3 d-flex flex-md-row flex-column">
+        <label class="fw-bolder me-3 my-1">Or: </label>
+        <form class="dropdown flex-fill" role="search">
+            <input type="search" class="form-control form-control-dark text-bg-secondary" placeholder="Search by title or content..." aria-label="Search">
+        </form>
+    </div>
+    
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th scope="col"><input type="checkbox" id="select-all"></th>
+                <th scope="col" class="d-md-table-cell" id="title-table-head" role="button">
+                    Title
+                    <svg class="svg-container"><use href="#bi-arrow-down-up"></use></svg>
+                </th>
+                <th scope="col" class="d-none d-md-table-cell">Author</th>
+                <th scope="col" class="d-none d-md-table-cell">Tags</th>
+                <th scope="col" class="d-none d-md-table-cell" id="comment-table-head" role="button">
+                    Comments
+                    <svg class="svg-container"><use href="#bi-arrow-down-up"></use></svg>
+                </th>
+                <th scope="col" class="d-none d-md-table-cell" id="updated-table-head" role="button">
+                    Last Modified
+                    <svg class="svg-container"><use href="#bi-arrow-down-up"></use></svg>
+                </th>
+                <th scope="col" class="d-none d-md-table-cell">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(item in pageData.posts.items):
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>
+                    <strong><a href="/manage/post/#(item.id)">#(item.title)</a></strong>
+                </td>
+                <td class="d-none d-md-table-cell">#(item.author_name)</td>
+                <td class="d-none d-md-table-cell">#(item.tags)</td>
+                <td class="d-none d-md-table-cell">#(item.comment_count)</td>
+                <td class="d-none d-md-table-cell unixTime">#(item.updated_at)</td>
+                <td class="d-none d-md-table-cell status-selection">
+                    <select id="status-options-#(item.id)" class="selection-#(item.status)">
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="pendingReview">Pending Review</option>
+                    </select>
+                </td>
+            </tr>
+            #endfor
+        </tbody>
+        <tfoot>
+            
+        </tfoot>
+    </table>
+    
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end pagination-sm">
+            <label class="page-link disabled bg-transparent border-0" id="item-count">
+                #(pageData.posts.metadata.total) item#if(pageData.posts.metadata.total > 1):s #endif
+            </label>
+            <div class="pagination justify-content-end pagination-sm ps-2 #if(pageData.posts.metadata.total <= 20): d-none #endif">
+                <li class="page-item">
+                    <button id="first-page" class="page-link" aria-label="First">&laquo;</button>
+                </li>
+                <li class="page-item">
+                    <button id="previous-page" class="page-link" aria-label="Previous">‹</button>
+                </li>
+                <li class="page-item">
+                    <button id="current-page" class="page-link disabled">1</button>
+                </li>
+                <li class="page-item">
+                    <button id="next-page" class="page-link" aria-label="Next">›</button>
+                </li>
+                <li class="page-item">
+                    <button id="last-page" class="page-link" aria-label="Last">&raquo;</button>
+                </li>
+            </div>
+        </ul>
+    </nav>
+    
+</div>
+<script src="/js/manage/post list.js"></script>
+#dumpContext
+#endexport
+#endextend

@@ -63,15 +63,44 @@ const appendAlert = (parent, message, type) => {
     const wrapper = document.createElement('div');
     wrapper.id = alertID;
     
-    wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible d-flex align-items-center justify-content-center" role="alert">`,
-        `<svg class="bi me-2 svg-container"><use href="#${icon}"></use></svg>`,
-        `${message}`,
-        `<button type="button" class="btn-close" onclick="closeAlertIn(this.parentElement.parentElement.parentElement)" aria-label="Close"></button>`,
-        '</div>'
-    ].join('');
+    wrapper.innerHTML = `<div class="alert alert-${type} alert-dismissible d-flex align-items-center justify-content-center" role="alert">
+        <svg class="bi me-2 svg-container"><use href="#${icon}"></use></svg>
+        ${message}
+        <button type="button" class="btn-close" onclick="closeAlertIn(this.parentElement.parentElement.parentElement)" aria-label="Close"></button>
+        </div>`;
 
     parent.insertBefore(wrapper, parent.firstChild);
+}
+
+// Create a static modal(can't be closed by clicking outside the modal or by pressing ESC) and show it in current page.
+function createModal(title, body, closeAction = null) {
+    const modalHTML = `
+        <div class="modal fade" id="staticModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">${title}</h5>
+              </div>
+              <div class="modal-body">
+                ${body}
+              </div>
+              <div class="modal-footer">
+                <button type="button" "class="btn btn-primary" data-bs-dismiss="modal" onclick="${closeAction}">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const node = document.getElementById('staticModal');
+    // Bootstrap's modal instance has the show() method to display the modal.
+    const staticModal = new bootstrap.Modal(node);
+    staticModal.show();
+    // When modal is dismissed, remove the node from DOM
+    node.addEventListener('hidden.bs.modal', function () {
+        node.remove();
+    });
 }
 
 // Validate form fields when each input changes, toggle appearences and submit buttons on/off status accordingly.
@@ -150,7 +179,7 @@ function submitForm() {
     });
 }
 
-// Convert unix time to local date, eliminate time part(HH:MM:SS)
+// Convert unix time to local time
 function unixToLocal() {
     const timeElements = document.querySelectorAll(".unixTime");
     timeElements.forEach(node => {
@@ -159,8 +188,8 @@ function unixToLocal() {
         // Still may contain float point number(decimal part longer than 3 digits), convert it to int.
         const int = Math.floor(unixSeconds);
         const unixTime = new Date(int);
-        const localDateString = unixTime.toLocaleDateString();
-        node.textContent = localDateString;
+        const localString = unixTime.toLocaleString();
+        node.textContent = localString;
     });
 }
 

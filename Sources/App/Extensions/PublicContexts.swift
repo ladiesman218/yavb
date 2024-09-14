@@ -1,13 +1,39 @@
 import Vapor
+import Fluent
 import LeafKit
 
-struct PostsContext: Encodable {
+struct BasicCtx: Encodable {
     let title: String
-    let posts: [BlogPost.DTO]
+    let description: String
+    let shortName: String
+    let siteName: String
+    init(title: String = "", description: String = "") {
+        self.title = title
+        self.description = description
+        self.shortName = App.shortName
+        self.siteName = App.siteName
+    }
 }
 
-struct PostContext: Encodable {
-    let post: BlogPost.DTO
+protocol Renderable: Encodable {
+    var basicCtx: BasicCtx { get }
+    var js: String? { get set }
+}
+
+struct EmptyCtx: Renderable {
+    let basicCtx = BasicCtx()
+    var js: String? = nil
+}
+struct PublicPostListCtx: Renderable {
+    let basicCtx: BasicCtx
+    var js: String? = nil
+    let posts: [BlogPost.DetailDTO]
+}
+
+struct PublicPostDetailCtx: Renderable {
+    let basicCtx: BasicCtx
+    var js: String? = nil
+    let post: BlogPost.DetailDTO
 }
 
 struct MenuItem: Encodable {
@@ -44,8 +70,25 @@ struct ManageSidebarCxt: Encodable {
     let items = [post, media, pages, comments, users, settings]
 }
 
-struct ManageContext: Encodable {
+struct StatusPostsCount: Codable {
+    let published: Int
+    let draft: Int
+    let pendingReview: Int
+    let rejected: Int
+}
+
+struct ManagePostsListContext: Renderable {
     let sideBar = ManageSidebarCxt()
-    var posts: [BlogPost.DTO]? = nil
-    var pages: [BlogPost.DTO]? = nil
+    let statusPostsCount: StatusPostsCount
+    let basicCtx: BasicCtx
+    var js: String? = nil
+    let posts: Page<BlogPost.ListDTO>
+}
+
+// Could be used when creating new post, so post is optional.
+struct ManagePostContext: Renderable {
+    let sideBar = ManageSidebarCxt()
+    let basicCtx: BasicCtx
+    var js: String? = nil
+    let post: BlogPost.DetailDTO?
 }

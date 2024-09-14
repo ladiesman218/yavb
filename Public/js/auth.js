@@ -73,7 +73,6 @@ function alertNotActivated(email, parentElement, message) {
     appendAlert(parentElement, message + button.outerHTML, 'danger');
     const btn = document.querySelector('#resendActivation');
     btn.onclick = () => requestActivation(email, parentElement);
-
 }
 
 // Request a reset email
