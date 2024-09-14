@@ -9,7 +9,7 @@
                 <h2>#(post.title)</h2>
                 <span class="text-end d-flex align-items-center">
                     Updated:
-                    <span class="unixTime">#(post.updatedAt)</span>
+                    <span>#date(post.updatedAt, "yyyy-MM-dd")</span>
                 </span>
             </div>
             <!--Tags-->
