@@ -71,9 +71,9 @@ extension Entrypoint {
     }
 }
 
-#warning("remove @preconcurrency in future")
-@preconcurrency
 struct LogFormatter: LogFormattable {
+#warning("remove @preconcurrency in future")
+    @preconcurrency
     private let dateFormat = DateFormatter()
     
     init() {
