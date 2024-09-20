@@ -71,8 +71,7 @@ extension Entrypoint {
     }
 }
 
-#warning("remove @unchecked Sendable in future")
-struct LogFormatter: LogFormattable, @unchecked Sendable {
+struct LogFormatter: LogFormattable {
     private let dateFormat = DateFormatter()
     
     init() {
