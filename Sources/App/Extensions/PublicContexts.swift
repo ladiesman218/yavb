@@ -5,13 +5,9 @@ import LeafKit
 struct BasicCtx: Encodable {
     let title: String
     let description: String
-    let shortName: String
-    let siteName: String
     init(title: String = "", description: String = "") {
         self.title = title
         self.description = description
-        self.shortName = App.shortName
-        self.siteName = App.siteName
     }
 }
 
@@ -24,6 +20,15 @@ struct EmptyCtx: Renderable {
     let basicCtx = BasicCtx()
     var js: String? = nil
 }
+
+struct EmailCtx: Renderable {
+    let basicCtx = BasicCtx()
+    var js: String? = nil
+    var host: String? = nil
+    var otp: String? = nil
+    var jwt: String? = nil
+}
+
 struct PublicPostListCtx: Renderable {
     let basicCtx: BasicCtx
     var js: String? = nil
@@ -85,10 +90,10 @@ struct ManagePostsListContext: Renderable {
     let posts: Page<BlogPost.ListDTO>
 }
 
-// Could be used when creating new post, so post is optional.
 struct ManagePostContext: Renderable {
     let sideBar = ManageSidebarCxt()
     let basicCtx: BasicCtx
     var js: String? = nil
+    // Could be used when creating new post, so post is optional.
     let post: BlogPost.DetailDTO?
 }

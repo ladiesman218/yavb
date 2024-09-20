@@ -29,7 +29,7 @@
                 YAVB Project Place Holder
                 <a href="/" target="_blank" class="btn d-flex align-items-center text-bg-dark">
                     <svg class="svg-container ms-2"><use href="#house-door-fill"></use></svg>
-                    #(pageData.basicCtx.shortName)
+                    #(siteName)
                 </a>
             </div>
             

@@ -11,7 +11,12 @@ struct AuthController: RouteCollection {
         }
         guard user.activated == false else { throw Abort(.badRequest, reason: "Already activated") }
         let jwt = try await user.generateJWT(req, subject: UserJWT.Subject.activation)
-        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "\(siteName) Registration", contentType: .html, text: try Message(placeHolders: [jwt, jwt], template: Template.accountActivation, removeHTML: false).string)
+        let host = try req.host
+        let content = try await req.render("EmailTemplates/AccountActivation", EmailCtx(host: host, jwt: jwt))
+        guard let text = content.data.getString(at: 0, length: content.data.readableBytes) else {
+            throw Abort(.internalServerError, reason: "Unable to generate account activation email content")
+        }
+        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "\(req.application.configuration.siteName) Registration", contentType: .html, text: text)
         let _ = req.application.sendMail(mail)
     }
     
@@ -101,10 +106,15 @@ struct AuthController: RouteCollection {
             throw Abort(.badRequest, reason: "Invalid email format")
         }
         guard let user = try await User.query(on: req.db).filter(\.$email == string).first() else {
-            throw Abort(.unauthorized, reason: "Email address is not registered with \(siteName)")
+            throw Abort(.unauthorized, reason: "Email address is not registered with \(req.application.configuration.siteName)")
         }
         let otp = try await user.genNewOTP(req)
-        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "One Time Password", contentType: .html, text: try Message(placeHolders: [otp], template: Template.otpPassword).string)
+        let content = try await req.render("/EmailTemplates/RequestOTP", EmailCtx(otp: otp))
+        guard let text = content.data.getString(at: 0, length: content.data.readableBytes) else {
+            throw Abort(.internalServerError, reason: "Unanble to get generate otp email content")
+        }
+        
+        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "One Time Password", contentType: .html, text: text)
         let _ = req.application.sendMail(mail)
         
         return .ok
@@ -138,10 +148,16 @@ struct AuthController: RouteCollection {
             throw Abort(.badRequest, reason: "Invalid email format")
         }
         guard let user = try await User.query(on: req.db).filter(\.$email == email).first() else {
-            throw Abort(.unauthorized, reason: "Email address is not registered with \(siteName)")
+            throw Abort(.unauthorized, reason: "Email address is not registered with \(req.application.configuration.siteName)")
         }
+        let host = try req.host
         let jwt = try await user.generateJWT(req, subject: UserJWT.Subject.changePW)
-        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "Change Password for \(siteName)", contentType: .html, text: try Message(placeHolders: [jwt], template: Template.changePW, removeHTML: false).string)
+        let content = try await req.render("/EmailTemplates/RequestPWChange", EmailCtx(host: host, jwt: jwt))
+        guard let text = content.data.getString(at: 0, length: content.data.readableBytes) else {
+            throw Abort(.internalServerError, reason: "Un able to generate change password email content")
+        }
+        
+        let mail = Mail(to: [.init(name: user.username, email: user.email)], subject: "Change Password for \(req.application.configuration.siteName)", contentType: .html, text: text)
         let _ = req.application.sendMail(mail)
         return .ok
     }

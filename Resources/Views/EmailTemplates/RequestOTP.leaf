@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <font size="5"><p>You just requested an one time password for #(siteName):</p>
+            <p>#(pageData.otp)</p>
+        </font>
+        <p>This password will be valid for the next 5 minutes and 1 time use</p>
+        <p>If you didn't request an password, please ignore this email.</p>
+    </body>
+</html>

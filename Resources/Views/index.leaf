@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href="/bootstrap-5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link href="/css/custom.css" rel="stylesheet" />
-        <title>#(pageData.title)</title>
-        <meta name="description" content="#(pageData.description)">
+        <title>#(pageData.basicCtx.title)</title>
+        <meta name="description" content="#(pageData.basicCtx.description)">
     </head>
     
     <body>

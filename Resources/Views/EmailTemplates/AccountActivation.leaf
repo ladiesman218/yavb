@@ -1,0 +1,11 @@
+<html>
+    <body>
+        <font size="5"><p>Welcome to #(siteName)</p>
+            <p>Visit <a href="http://#(pageData.host)/auth/activate/#(pageData.jwt)">this link</a> to activate your <strong>#(siteName)</strong> account</p>
+            <p>Or paste the following URL into your browser:</p>
+            <p>#(pageData.host)/auth/activate/#(pageData.jwt)</p>
+        </font>
+        <p>The link will be valid for the next 5 minutes</p>
+        <p>If you didn't register an account, please ignore this email.</p>
+    </body>
+</html>

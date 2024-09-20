@@ -5,8 +5,13 @@ import Fluent
 
 // The default implementation only allows one field in db to be used as username. Here we wanna use either one from these 3: username, email or phone number. So everything in the following protocol conformance is required and default, except for 1 we've customized: authenticator() function now returns a customized UserAuthenticator instance instead of ModelAuthenticatable's default implementation.
 extension User: ModelCredentialsAuthenticatable {
-    static let usernameKey = \User.$username
-    static let passwordHashKey = \User.$password
+    static var usernameKey: KeyPath<User, Field<String>> {
+        \User.$username
+    }
+    
+    static var passwordHashKey: KeyPath<User, Field<String>> {
+        \User.$password
+    }
     
     public static func credentialsAuthenticator( database: DatabaseID? = nil ) -> AsyncAuthenticator {
         UserBasicAuthenticator()

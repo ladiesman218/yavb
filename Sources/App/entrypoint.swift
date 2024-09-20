@@ -55,14 +55,14 @@ extension Entrypoint {
                                                   logFormat: logFormat,
                                                   fileURL: fileURL,
                                                   rotationConfig: rotationConfig)
-        var puppy = Puppy()
-        puppy.add(fileRotation)
-        // Puppy's add function requires loggers have different lables
-        let console = ConsoleLogger("top.douwone.yavb.console", logFormat: logFormat)
-        puppy.add(console)
         
         try LoggingSystem.bootstrap(from: &env) { level in
             return { label -> LogHandler in
+                var puppy = Puppy()
+                puppy.add(fileRotation)
+                // Puppy's add function requires loggers have different lables
+                let console = ConsoleLogger("top.douwone.yavb.console", logFormat: logFormat)
+                puppy.add(console)
                 var handler = PuppyLogHandler(label: label, puppy: puppy)
                 handler.logLevel = level
                 return handler

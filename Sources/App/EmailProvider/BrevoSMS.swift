@@ -4,7 +4,7 @@ struct BrevoSMSContent: BrevoMessage {
     typealias Sender = String
     typealias Recipient = String
     
-    static var sender: String = Environment.get("BREVO_SENDER_NAME") ?? "noreply"
+    static let sender: String = Environment.get("BREVO_SENDER_NAME") ?? "noreply"
     
     var recipient: String
     var subject: String? = nil

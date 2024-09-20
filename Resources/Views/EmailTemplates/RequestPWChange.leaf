@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <font size="5"><p>You just requested to change password for #(siteName):</p>
+            <p>Visit <a href="http://#(pageData.host)/auth/changePW/#(pageData.jwt)">this link</a> to change your new password</p>
+        </font>
+        <p>The link will be valid for the next 5 minutes</p>
+        <p>If you didn't request changing password, please ignore this email.</p>
+    </body>
+</html>

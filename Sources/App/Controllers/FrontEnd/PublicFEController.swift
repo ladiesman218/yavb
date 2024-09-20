@@ -4,7 +4,7 @@ import Leaf
 struct PublicFEController: RouteCollection {
     static func renderHome(_ req: Request, js: String? = nil) async throws -> View {
         let posts = try await PublicBlogController().getRecent(req)
-        let pageData = PublicPostListCtx(basicCtx: .init(title: "Welecome to \(siteName)", description: "This is a sample description for the site"), js: js, posts: posts)
+        let pageData = PublicPostListCtx(basicCtx: .init(title: "Welecome to \(req.application.configuration.siteName)", description: "This is a sample description for the site"), js: js, posts: posts)
         return try await req.render("main", pageData, js: js)
     }
     

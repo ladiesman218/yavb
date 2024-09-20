@@ -41,7 +41,7 @@ final class BlogPost: Model, Content, @unchecked Sendable {
             case .rejected, .pendingReview:
                 throw Abort(.badRequest, reason: "Available status for new post are: \(BlogPost.Status.draft) and \(BlogPost.Status.published)")
             case .published:
-                status = (postsNeedReview && !user.role.authorizations.contains(.reviewPost)) ? .pendingReview : .published
+                status = (req.application.configuration.postsNeedReview && !user.role.authorizations.contains(.reviewPost)) ? .pendingReview : .published
             default:
                 status = .draft
         }

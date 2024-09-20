@@ -26,6 +26,7 @@ struct ProtectedBlogController: RouteCollection {
         protectedRoute.post("delete", ":id", use: remove)
         protectedRoute.post("update", ":id", use: update)
         protectedRoute.get(":id", use: getPostByID)
+        protectedRoute.get("asdf", use: getPostByID)
     }
     
     func add(_ req: Request) async throws -> HTTPStatus {
@@ -224,7 +225,7 @@ HAVING COUNT(DISTINCT tags.id) = \(count)
                             break
                         }
                         // Here means the previous status is either draft or published.
-                        post.status = (postsNeedReview && user.role.authorizations == .author) ? .pendingReview : .published
+                        post.status = (req.application.configuration.postsNeedReview && user.role.authorizations == .author) ? .pendingReview : .published
                     }
                 case .rejected:
                     guard try user.requireID() != post.author.id && post.status != .draft else {

@@ -1,7 +1,7 @@
 import Vapor
 import Fluent
 
-final class ProtectedTagController: RouteCollection {
+struct ProtectedTagController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let protectedRoute = routes.grouped(User.credentialsAuthenticator(), User.sessionAuthenticator(), User.guardMiddleware()).grouped("api", "tag")
         protectedRoute.post("create", use: addTag)

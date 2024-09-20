@@ -33,7 +33,6 @@ extension User {
     
     static let usernameLength = 4 ... 32
     static let passwordLength = 6 ... 256
-    #warning("fix email regex, now will be valid without domain suffix")
     static let emailRegex = "^[A-Z0-9a-z._%+-]+@([A-Za-z0-9]+[-.]?)*[A-Za-z0-9]+\\.[A-Za-z]{2,64}$"
     static let phoneRegex: String = "(\\+[1-9]+(-[0-9]+)* )?[0]?[1-9][0-9\\- ][0-9]*$"
     
