@@ -32,6 +32,9 @@ let package = Package(
                 .product(name: "Puppy", package: "Puppy"),
                 .product(name: "VaporSMTPKit", package: "VaporSMTPKit"),
                 .product(name: "Fakery", package: "Fakery"),
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .testTarget(name: "AppTests",

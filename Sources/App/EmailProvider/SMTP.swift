@@ -1,6 +1,6 @@
 import VaporSMTPKit
 import Vapor
-import SMTPKitten
+@preconcurrency import SMTPKitten
 
 extension Application {
     static var defaultSMTPCredentials: SMTPCredentials {
