@@ -71,9 +71,8 @@ extension Entrypoint {
     }
 }
 
-struct LogFormatter: LogFormattable {
-#warning("remove @preconcurrency in future")
-    @preconcurrency
+#warning("remove @unchecked Sendable in future")
+struct LogFormatter: LogFormattable, @unchecked Sendable {
     private let dateFormat = DateFormatter()
     
     init() {
